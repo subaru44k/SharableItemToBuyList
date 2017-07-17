@@ -1,8 +1,11 @@
 package com.appsubaruod.sharabletobuylist.storage.eventoperator;
 
+import com.appsubaruod.sharabletobuylist.di.DaggerStorageInterpretatorComponent;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 import com.appsubaruod.sharabletobuylist.storage.eventobserver.StorageEventObserver;
 import com.appsubaruod.sharabletobuylist.storage.interpretator.MockInterpretator;
+
+import javax.inject.Inject;
 
 /**
  * Created by s-yamada on 2017/07/17.
@@ -10,14 +13,16 @@ import com.appsubaruod.sharabletobuylist.storage.interpretator.MockInterpretator
 
 public class StorageEventOperator {
     private static StorageEventOperator mInstance;
-    private StorageInterpretator mInterpretator;
+
+    @Inject StorageInterpretator mInterpretator;
 
     private StorageEventOperator() {
         initialize();
     }
 
     private void initialize() {
-        mInterpretator = new MockInterpretator();
+
+        mInterpretator = DaggerStorageInterpretatorComponent.create().inject();
         mInterpretator.registerStorageEventListener(new StorageEventObserver());
     }
 

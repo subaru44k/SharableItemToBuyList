@@ -1,6 +1,7 @@
 package com.appsubaruod.sharabletobuylist.storage.interpretator;
 
 import com.appsubaruod.sharabletobuylist.BuildConfig;
+import com.appsubaruod.sharabletobuylist.di.DaggerStorageInterpretatorComponent;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 
 import org.junit.Before;
@@ -11,6 +12,8 @@ import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
@@ -25,9 +28,13 @@ import static org.junit.Assert.*;
 @Config(packageName = "com.appsubaruod.sharabletobuylist.storage.interpretator", constants = BuildConfig.class, sdk = 21)
 public class MockInterpretatorTest {
     public static final String TEST_ITEM = "hoge";
-    private StorageInterpretator mInterpretator = new MockInterpretator();
+    @Inject StorageInterpretator mInterpretator;
     private List<String> addedList;
     private List<String> completedList;
+
+    public MockInterpretatorTest() {
+        mInterpretator = DaggerStorageInterpretatorComponent.create().inject();
+    }
 
     @Before
     public void setUp() {
