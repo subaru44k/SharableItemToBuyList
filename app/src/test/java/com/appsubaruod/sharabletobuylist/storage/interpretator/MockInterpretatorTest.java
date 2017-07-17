@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 @Config(packageName = "com.appsubaruod.sharabletobuylist.storage.interpretator", constants = BuildConfig.class, sdk = 21)
 public class MockInterpretatorTest {
     public static final String TEST_ITEM = "hoge";
-    private StorageInterpretator mInterpretator = MockInterpretator.getInstance();
+    private StorageInterpretator mInterpretator = new MockInterpretator();
     private List<String> addedList;
     private List<String> completedList;
 
@@ -33,12 +33,6 @@ public class MockInterpretatorTest {
     public void setUp() {
         addedList = new ArrayList<>();
         completedList = new ArrayList<>();
-    }
-
-    @Test
-    public void singleton() throws Exception {
-        assertThat(mInterpretator, notNullValue());
-        assertThat(mInterpretator, is(MockInterpretator.getInstance()));
     }
 
     @Test

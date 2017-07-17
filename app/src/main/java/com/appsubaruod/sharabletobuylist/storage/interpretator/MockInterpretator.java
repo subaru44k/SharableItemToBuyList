@@ -13,23 +13,8 @@ import java.util.Set;
 
 public class MockInterpretator implements StorageInterpretator {
     private static final String LOG_TAG = MockInterpretator.class.getName();
-    private static StorageInterpretator mInstance;
 
     private Set<StorageEvent> eventListeners = new HashSet<>();
-
-    private MockInterpretator() {
-    }
-
-    /**
-     * Obtains the instance of MockInterpretator.
-     * @return instance of MockInterpretator.
-     */
-    public static synchronized StorageInterpretator getInstance() {
-        if (mInstance == null) {
-            mInstance = new MockInterpretator();
-        }
-        return mInstance;
-    }
 
     @Override
     public void add(String itemToAdd) {
