@@ -2,10 +2,16 @@ package com.appsubaruod.sharabletobuylist.storage.interpretator;
 
 import android.util.Log;
 
+import com.appsubaruod.sharabletobuylist.models.Item;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by s-yamada on 2017/07/17.
@@ -13,28 +19,22 @@ import java.util.Set;
 
 public class MockInterpretator implements StorageInterpretator {
     private static final String LOG_TAG = MockInterpretator.class.getName();
-    private static StorageInterpretator mInstance;
+    private ScheduledExecutorService mScheduledService = Executors.newSingleThreadScheduledExecutor();
 
     private Set<StorageEvent> eventListeners = new HashSet<>();
 
-    private MockInterpretator() {
-    }
-
-    /**
-     * Obtains the instance of MockInterpretator.
-     * @return instance of MockInterpretator.
-     */
-    public static synchronized StorageInterpretator getInstance() {
-        if (mInstance == null) {
-            mInstance = new MockInterpretator();
-        }
-        return mInstance;
-    }
 
     @Override
     public void add(String itemToAdd) {
         Log.d(LOG_TAG, "Add item : " + itemToAdd);
-        eventListeners.forEach(item -> item.onItemAdded(itemToAdd));
+        mScheduledService.schedule(() -> {
+            eventListeners.forEach(item -> item.onItemAdded(itemToAdd));
+        }, 100, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public List<Item> getAllItems() {
+        return Arrays.asList();
     }
 
     @Override

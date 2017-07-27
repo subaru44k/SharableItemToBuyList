@@ -1,0 +1,18 @@
+general:
+  artifacts:
+    - ./app/build/outputs/apk/
+    - ./app/build/reports/
+machine:
+  java:
+    version: oraclejdk8
+  environment:
+    ANDROID_HOME: /usr/local/android-sdk-linux
+dependencies:
+  override:
+    - echo y | android update sdk --no-ui --all --filter "build-tools-25.0.2","android-26"
+test:
+  override:
+    - ./gradlew testDebugUnitTest --console=plain
+    - ./gradlew assembleRelease --console=plain
+    - mkdir -p $CIRCLE_ARTIFACTS/outputs && cp -r app/build/outputs $CIRCLE_ARTIFACTS/outputs
+    - mkdir -p $CIRCLE_ARTIFACTS/reports && cp -r app/build/reports $CIRCLE_ARTIFACTS/reports
