@@ -1,11 +1,16 @@
 package com.appsubaruod.sharabletobuylist.storage;
 
+import com.appsubaruod.sharabletobuylist.models.Item;
+
+import java.util.List;
+
 /**
  * Created by s-yamada on 2017/07/17.
  * Interprets intuitive item operation to the actual storage operations.
  */
 public interface StorageInterpretator {
     void add(String itemToAdd);
+    List<Item> getAllItems();
     void setCompleted(String itemToSetCompleted);
     void registerStorageEventListener(StorageEvent listener);
 

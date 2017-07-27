@@ -3,7 +3,7 @@ package com.appsubaruod.sharabletobuylist.storage.eventoperator;
 import com.appsubaruod.sharabletobuylist.di.DaggerStorageInterpretatorComponent;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 import com.appsubaruod.sharabletobuylist.storage.eventobserver.StorageEventObserver;
-import com.appsubaruod.sharabletobuylist.storage.interpretator.MockInterpretator;
+import com.appsubaruod.sharabletobuylist.util.WorkerThread;
 
 import javax.inject.Inject;
 
@@ -21,7 +21,6 @@ public class StorageEventOperator {
     }
 
     private void initialize() {
-
         mInterpretator = DaggerStorageInterpretatorComponent.create().inject();
         mInterpretator.registerStorageEventListener(new StorageEventObserver());
     }
@@ -31,6 +30,15 @@ public class StorageEventOperator {
             mInstance = new StorageEventOperator();
         }
         return mInstance;
+    }
+
+    public void add(String itemToAdd) {
+        WorkerThread.getSingleExecutor().submit(new Runnable() {
+            @Override
+            public void run() {
+                mInterpretator.add(itemToAdd);
+            }
+        });
     }
 
 }
