@@ -12,7 +12,12 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "build-tools-25.0.2","android-26"
 test:
   override:
+    - emulator -avd circleci-android21 -no-audio -no-window:
+        background: true
+        parallel: true
     - ./gradlew testLocalunittestDebugUnitTest --console=plain
+    - circle-android wait-for-boot
+    - ./gradlew createRegularDebugCoverageReport --console=plain
     - ./gradlew assembleRegularRelease --console=plain
     - mkdir -p $CIRCLE_ARTIFACTS/outputs && cp -r app/build/outputs $CIRCLE_ARTIFACTS/outputs
     - mkdir -p $CIRCLE_ARTIFACTS/reports && cp -r app/build/reports $CIRCLE_ARTIFACTS/reports
