@@ -1,6 +1,9 @@
 apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
 
 android {
+    flavorDimensions "executionEnv"
+
     compileSdkVersion 26
     buildToolsVersion "25.0.2"
     defaultConfig {
@@ -16,10 +19,21 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            testCoverageEnabled true
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    productFlavors {
+        regular {
+            dimension "executionEnv"
+        }
+        localunittest {
+            dimension "executionEnv"
+        }
     }
 }
 

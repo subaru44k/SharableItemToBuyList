@@ -12,4 +12,16 @@ public class Item {
         mItemName = itemName;
         mIsBought = isBought;
     }
+
+    public String getItemName() {
+        return mItemName;
+    }
+
+    public boolean isBought() {
+        return mIsBought;
+    }
+
+    public void setBought(boolean bought) {
+        mIsBought = bought;
+    }
 }

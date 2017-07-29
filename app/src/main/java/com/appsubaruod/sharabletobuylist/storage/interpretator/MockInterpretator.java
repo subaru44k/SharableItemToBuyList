@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.storage.interpretator;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.models.Item;
@@ -23,6 +24,9 @@ public class MockInterpretator implements StorageInterpretator {
 
     private Set<StorageEvent> eventListeners = new HashSet<>();
 
+    public MockInterpretator(Context context) {
+        // do not use context
+    }
 
     @Override
     public void add(String itemToAdd) {
@@ -33,14 +37,24 @@ public class MockInterpretator implements StorageInterpretator {
     }
 
     @Override
+    public void removeItem(String itemToDelete) {
+
+    }
+
+    @Override
+    public void removeAllItems() {
+
+    }
+
+    @Override
     public List<Item> getAllItems() {
         return Arrays.asList();
     }
 
     @Override
-    public void setCompleted(String itemToSetCompleted) {
+    public void setCompleted(String itemToSetCompleted, boolean isCompleted) {
         Log.d(LOG_TAG, "Set completed : " + itemToSetCompleted);
-        eventListeners.forEach(item -> item.onItemCompleted(itemToSetCompleted));
+        eventListeners.forEach(item -> item.onItemCompleted(itemToSetCompleted, isCompleted));
     }
 
     @Override

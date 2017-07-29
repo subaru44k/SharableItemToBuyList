@@ -13,7 +13,12 @@ public class StorageEventObserver implements StorageInterpretator.StorageEvent {
     }
 
     @Override
-    public void onItemCompleted(String itemCompleted) {
+    public void onItemCompleted(String itemCompleted, boolean isCompleted) {
+
+    }
+
+    @Override
+    public void onItemDeleted(String itemDeleted) {
 
     }
 }
