@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.di.DaggerStorageInterpretatorComponent;
 import com.appsubaruod.sharabletobuylist.di.StorageInterpretatorModule;
+import com.appsubaruod.sharabletobuylist.models.Item;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 
 import org.junit.After;
@@ -40,6 +41,7 @@ public class RealmInterpretatorTest {
     private List<String> addedList;
     private List<String> completedList;
     private List<String> deletedList;
+    private boolean isCompletedValue;
     private CountDownLatch mLatch;
 
     public RealmInterpretatorTest() {
@@ -77,7 +79,7 @@ public class RealmInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
                 completedList.add(itemCompleted);
             }
 
@@ -106,7 +108,7 @@ public class RealmInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
                 completedList.add(itemCompleted);
             }
 
@@ -137,7 +139,7 @@ public class RealmInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
 
             }
 
@@ -166,7 +168,7 @@ public class RealmInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
                 completedList.add(itemCompleted);
                 mLatch.countDown();
             }
@@ -176,11 +178,75 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
-        mInterpretator.setCompleted(TEST_ITEM);
+        mInterpretator.setCompleted(TEST_ITEM, true);
         mLatch.await(1, TimeUnit.SECONDS);
 
         assertThat(addedList, hasItem(TEST_ITEM));
         assertThat(completedList, hasItem(TEST_ITEM));
+    }
+
+    @Test
+    public void setCompletedTwice() throws Exception {
+        mLatch = new CountDownLatch(2);
+        mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
+            @Override
+            public void onItemAdded(String itemAdded) {
+
+            }
+
+            @Override
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
+                mLatch.countDown();
+                isCompletedValue = isCompleted;
+            }
+
+            @Override
+            public void onItemDeleted(String itemDeleted) {
+
+            }
+        });
+        mInterpretator.add(TEST_ITEM);
+        mInterpretator.setCompleted(TEST_ITEM, true);
+        mInterpretator.setCompleted(TEST_ITEM, true);
+
+        if (mLatch.await(1, TimeUnit.SECONDS)) {
+            fail("onItemCompleted is unexpectedly called twice.");
+        }
+        List<Item> allItem = mInterpretator.getAllItems();
+        assertThat(allItem.get(0).isBought(), is(true));
+        assertThat(isCompletedValue, is(true));
+    }
+
+    @Test
+    public void setCompletedToFalse() throws Exception {
+        mLatch = new CountDownLatch(2);
+        mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
+            @Override
+            public void onItemAdded(String itemAdded) {
+
+            }
+
+            @Override
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
+                mLatch.countDown();
+                isCompletedValue = isCompleted;
+            }
+
+            @Override
+            public void onItemDeleted(String itemDeleted) {
+
+            }
+        });
+        mInterpretator.add(TEST_ITEM);
+        mInterpretator.setCompleted(TEST_ITEM, true);
+        mInterpretator.setCompleted(TEST_ITEM, false);
+
+        if (!mLatch.await(1, TimeUnit.SECONDS)) {
+            fail("onItemCompleted is not called twice.");
+        }
+        List<Item> allItem = mInterpretator.getAllItems();
+        assertThat(allItem.get(0).isBought(), is(false));
+        assertThat(isCompletedValue, is(false));
     }
 
     @Test
@@ -192,7 +258,7 @@ public class RealmInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
                 completedList.add(itemCompleted);
                 mLatch.countDown();
             }
@@ -201,7 +267,7 @@ public class RealmInterpretatorTest {
             public void onItemDeleted(String itemDeleted) {
             }
         });
-        mInterpretator.setCompleted(TEST_ITEM);
+        mInterpretator.setCompleted(TEST_ITEM, true);
         mLatch.await(1, TimeUnit.SECONDS);
 
         assertThat(addedList, not(hasItem(TEST_ITEM)));
@@ -217,7 +283,7 @@ public class RealmInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
 
             }
 
@@ -245,7 +311,7 @@ public class RealmInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
 
             }
 
@@ -274,7 +340,7 @@ public class RealmInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
 
             }
 

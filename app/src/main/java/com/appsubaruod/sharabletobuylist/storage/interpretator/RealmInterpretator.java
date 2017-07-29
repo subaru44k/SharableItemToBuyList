@@ -32,6 +32,7 @@ public class RealmInterpretator implements StorageInterpretator {
 
         // if item already exists in database, then do not add and close.
         if (existsItem(realm, itemToAdd)) {
+            Log.w(LOG_TAG, "try to add already existing item : " + itemToAdd);
             realm.close();
             return;
         }
@@ -97,8 +98,8 @@ public class RealmInterpretator implements StorageInterpretator {
         mEventListeners.forEach(listener -> listener.onItemAdded(itemName));
     }
 
-    private void notifyItemCompleted(String itemName) {
-        mEventListeners.forEach(listener -> listener.onItemCompleted(itemName));
+    private void notifyItemCompleted(String itemName, boolean isCompleted) {
+        mEventListeners.forEach(listener -> listener.onItemCompleted(itemName, isCompleted));
     }
 
     private List<Item> getAllItems(Realm realm) {
@@ -119,25 +120,39 @@ public class RealmInterpretator implements StorageInterpretator {
     }
 
     @Override
-    public void setCompleted(String itemToSetCompleted) {
+    public void setCompleted(String itemToSetCompleted, boolean isCompleted) {
         Realm realm = Realm.getDefaultInstance();
 
         // If item is not exist, nothing to do.
         if (!existsItem(realm, itemToSetCompleted)) {
+            Log.w(LOG_TAG,
+                    "Try to set completed to not existing item : " + itemToSetCompleted);
+            realm.close();
+            return;
+        }
+
+        // if isCompleted value is already set, ignore.
+        RealmItem item = getItem(realm, itemToSetCompleted);
+        if (item.isBought() == isCompleted) {
+            Log.w(LOG_TAG,
+                    "Try to set completed to already set value : " + itemToSetCompleted);
             realm.close();
             return;
         }
         realm.beginTransaction();
 
-        RealmItem item = new RealmItem();
-        item.setItemName(itemToSetCompleted);
-        item.setBought(true);
+        item.setBought(isCompleted);
         realm.insert(item);
 
         realm.commitTransaction();
         realm.close();
 
-        notifyItemCompleted(itemToSetCompleted);
+        notifyItemCompleted(itemToSetCompleted, isCompleted);
+    }
+
+    private RealmItem getItem(Realm realm, String itemToSetCompleted) {
+        return realm.where(RealmItem.class)
+                .equalTo("mItemName", itemToSetCompleted).findFirst();
     }
 
 

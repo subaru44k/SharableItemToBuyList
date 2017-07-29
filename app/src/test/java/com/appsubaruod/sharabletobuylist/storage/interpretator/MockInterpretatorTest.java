@@ -57,7 +57,7 @@ public class MockInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
                 completedList.add(itemCompleted);
             }
 
@@ -81,7 +81,7 @@ public class MockInterpretatorTest {
             }
 
             @Override
-            public void onItemCompleted(String itemCompleted) {
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
                 completedList.add(itemCompleted);
                 mLatch.countDown();
             }
@@ -91,7 +91,7 @@ public class MockInterpretatorTest {
 
             }
         });
-        mInterpretator.setCompleted(TEST_ITEM);
+        mInterpretator.setCompleted(TEST_ITEM, true);
         mLatch.await(1, TimeUnit.SECONDS);
         assertThat(addedList, not(hasItem(TEST_ITEM)));
         assertThat(completedList, hasItem(TEST_ITEM));

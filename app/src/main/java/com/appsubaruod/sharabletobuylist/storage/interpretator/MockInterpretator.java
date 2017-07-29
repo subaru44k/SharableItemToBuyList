@@ -52,9 +52,9 @@ public class MockInterpretator implements StorageInterpretator {
     }
 
     @Override
-    public void setCompleted(String itemToSetCompleted) {
+    public void setCompleted(String itemToSetCompleted, boolean isCompleted) {
         Log.d(LOG_TAG, "Set completed : " + itemToSetCompleted);
-        eventListeners.forEach(item -> item.onItemCompleted(itemToSetCompleted));
+        eventListeners.forEach(item -> item.onItemCompleted(itemToSetCompleted, isCompleted));
     }
 
     @Override
