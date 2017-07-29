@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.storage.interpretator;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.models.Item;
@@ -23,6 +24,9 @@ public class MockInterpretator implements StorageInterpretator {
 
     private Set<StorageEvent> eventListeners = new HashSet<>();
 
+    public MockInterpretator(Context context) {
+        // do not use context
+    }
 
     @Override
     public void add(String itemToAdd) {

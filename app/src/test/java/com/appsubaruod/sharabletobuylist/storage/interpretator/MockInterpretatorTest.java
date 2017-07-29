@@ -2,12 +2,14 @@ package com.appsubaruod.sharabletobuylist.storage.interpretator;
 
 import com.appsubaruod.sharabletobuylist.BuildConfig;
 import com.appsubaruod.sharabletobuylist.di.DaggerStorageInterpretatorComponent;
+import com.appsubaruod.sharabletobuylist.di.StorageInterpretatorModule;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
@@ -18,10 +20,8 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by s-yamada on 2017/07/17.
@@ -36,7 +36,8 @@ public class MockInterpretatorTest {
     private CountDownLatch mLatch;
 
     public MockInterpretatorTest() {
-        mInterpretator = DaggerStorageInterpretatorComponent.create().inject();
+        mInterpretator = DaggerStorageInterpretatorComponent.builder()
+                .storageInterpretatorModule(new StorageInterpretatorModule(RuntimeEnvironment.application)).build().inject();
     }
 
     @Before
