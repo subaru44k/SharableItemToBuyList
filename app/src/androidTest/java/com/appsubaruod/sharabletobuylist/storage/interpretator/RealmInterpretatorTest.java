@@ -44,7 +44,8 @@ public class RealmInterpretatorTest {
 
     public RealmInterpretatorTest() {
         mInterpretator = DaggerStorageInterpretatorComponent.builder()
-                .storageInterpretatorModule(new StorageInterpretatorModule(InstrumentationRegistry.getTargetContext())).build().inject();
+                .storageInterpretatorModule(new StorageInterpretatorModule(
+                        InstrumentationRegistry.getTargetContext())).build().inject();
     }
 
     @Before
@@ -89,7 +90,8 @@ public class RealmInterpretatorTest {
         assertThat(addedList, hasItem(TEST_ITEM));
         assertThat(completedList, not(hasItem(TEST_ITEM)));
 
-        List<String> itemList = mInterpretator.getAllItems().stream().map(item -> item.getItemName()).collect(Collectors.toList());
+        List<String> itemList = mInterpretator.getAllItems().stream()
+                .map(item -> item.getItemName()).collect(Collectors.toList());
         Log.d("item list" , Integer.toString(itemList.size()));
         assertThat(itemList, is(contains(TEST_ITEM)));
     }
@@ -118,7 +120,8 @@ public class RealmInterpretatorTest {
 
         assertThat(completedList, not(hasItem(TEST_ITEM)));
 
-        List<String> itemList = mInterpretator.getAllItems().stream().map(item -> item.getItemName()).collect(Collectors.toList());
+        List<String> itemList = mInterpretator.getAllItems().stream()
+                .map(item -> item.getItemName()).collect(Collectors.toList());
         Log.d("item list" , Integer.toString(itemList.size()));
         assertThat(itemList.size(), is(1));
         assertThat(itemList, is(contains(TEST_ITEM)));
@@ -149,7 +152,8 @@ public class RealmInterpretatorTest {
         if (!mLatch.await(1, TimeUnit.SECONDS)) {
             fail("onItemAdded does not called twice");
         }
-        List<String> itemList = mInterpretator.getAllItems().stream().map(item -> item.getItemName()).collect(Collectors.toList());
+        List<String> itemList = mInterpretator.getAllItems().stream()
+                .map(item -> item.getItemName()).collect(Collectors.toList());
         assertThat(itemList, is(contains(TEST_ITEM, TEST_ITEM2)));
     }
 
@@ -227,7 +231,8 @@ public class RealmInterpretatorTest {
         if (mLatch.await(1, TimeUnit.SECONDS)) {
             fail("onItemDeleted was called without deletion");
         }
-        List<String> itemList = mInterpretator.getAllItems().stream().map(item -> item.getItemName()).collect(Collectors.toList());
+        List<String> itemList = mInterpretator.getAllItems().stream()
+                .map(item -> item.getItemName()).collect(Collectors.toList());
         assertThat(itemList.size(), is(0));
     }
 
@@ -255,7 +260,8 @@ public class RealmInterpretatorTest {
         if (!mLatch.await(1, TimeUnit.SECONDS)) {
             fail("onItemDeleted was not called");
         }
-        List<String> itemList = mInterpretator.getAllItems().stream().map(item -> item.getItemName()).collect(Collectors.toList());
+        List<String> itemList = mInterpretator.getAllItems()
+                .stream().map(item -> item.getItemName()).collect(Collectors.toList());
         assertThat(itemList.size(), is(0));
     }
 
@@ -284,7 +290,8 @@ public class RealmInterpretatorTest {
         if (!mLatch.await(1, TimeUnit.SECONDS)) {
             fail("onItemDeleted was not called");
         }
-        List<String> itemList = mInterpretator.getAllItems().stream().map(item -> item.getItemName()).collect(Collectors.toList());
+        List<String> itemList = mInterpretator.getAllItems().stream()
+                .map(item -> item.getItemName()).collect(Collectors.toList());
         assertThat(itemList.size(), is(1));
         assertThat(itemList, is(contains(TEST_ITEM2)));
     }

@@ -7,12 +7,13 @@ machine:
     version: oraclejdk8
   environment:
     ANDROID_HOME: /usr/local/android-sdk-linux
+    QEMU_AUDIO_DRV: none
 dependencies:
   override:
     - echo y | android update sdk --no-ui --all --filter "build-tools-25.0.2","android-26"
 test:
   override:
-    - emulator -avd circleci-android24 -no-audio -no-window:
+    - emulator -avd circleci-android24 -no-window:
         background: true
         parallel: true
     - ./gradlew testLocalunittestDebugUnitTest --console=plain
