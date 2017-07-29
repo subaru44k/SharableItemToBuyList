@@ -37,6 +37,16 @@ public class MockInterpretator implements StorageInterpretator {
     }
 
     @Override
+    public void removeItem(String itemToDelete) {
+
+    }
+
+    @Override
+    public void removeAllItems() {
+
+    }
+
+    @Override
     public List<Item> getAllItems() {
         return Arrays.asList();
     }

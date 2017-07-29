@@ -10,6 +10,8 @@ import java.util.List;
  */
 public interface StorageInterpretator {
     void add(String itemToAdd);
+    void removeItem(String itemToDelete);
+    void removeAllItems();
     List<Item> getAllItems();
     void setCompleted(String itemToSetCompleted);
     void registerStorageEventListener(StorageEvent listener);
@@ -17,5 +19,6 @@ public interface StorageInterpretator {
     interface StorageEvent {
         void onItemAdded(String itemAdded);
         void onItemCompleted(String itemCompleted);
+        void onItemDeleted(String itemDeleted);
     }
 }

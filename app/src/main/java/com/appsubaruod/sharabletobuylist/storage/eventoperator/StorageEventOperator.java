@@ -25,8 +25,8 @@ public class StorageEventOperator {
     }
 
     private void initialize() {
-        mInterpretator = DaggerStorageInterpretatorComponent.builder().
-                storageInterpretatorModule(new StorageInterpretatorModule(mContext)).build().inject();
+        mInterpretator = DaggerStorageInterpretatorComponent.builder()
+                .storageInterpretatorModule(new StorageInterpretatorModule(mContext)).build().inject();
         mInterpretator.registerStorageEventListener(new StorageEventObserver());
     }
 

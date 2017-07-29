@@ -60,6 +60,11 @@ public class MockInterpretatorTest {
             public void onItemCompleted(String itemCompleted) {
                 completedList.add(itemCompleted);
             }
+
+            @Override
+            public void onItemDeleted(String itemDeleted) {
+
+            }
         });
         mInterpretator.add(TEST_ITEM);
         mLatch.await(1, TimeUnit.SECONDS);
@@ -77,8 +82,13 @@ public class MockInterpretatorTest {
 
             @Override
             public void onItemCompleted(String itemCompleted) {
-                completedList.add(TEST_ITEM);
+                completedList.add(itemCompleted);
                 mLatch.countDown();
+            }
+
+            @Override
+            public void onItemDeleted(String itemDeleted) {
+
             }
         });
         mInterpretator.setCompleted(TEST_ITEM);

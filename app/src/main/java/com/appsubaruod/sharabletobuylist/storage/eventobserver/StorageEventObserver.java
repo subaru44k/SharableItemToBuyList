@@ -16,4 +16,9 @@ public class StorageEventObserver implements StorageInterpretator.StorageEvent {
     public void onItemCompleted(String itemCompleted) {
 
     }
+
+    @Override
+    public void onItemDeleted(String itemDeleted) {
+
+    }
 }
