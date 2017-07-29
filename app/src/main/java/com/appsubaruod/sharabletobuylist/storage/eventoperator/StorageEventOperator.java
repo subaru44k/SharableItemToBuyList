@@ -15,12 +15,11 @@ import javax.inject.Inject;
  */
 
 public class StorageEventOperator {
-    private static StorageEventOperator mInstance;
     private Context mContext;
 
     @Inject StorageInterpretator mInterpretator;
 
-    private StorageEventOperator(Context context) {
+    public StorageEventOperator(Context context) {
         mContext = context;
         initialize();
     }
@@ -29,13 +28,6 @@ public class StorageEventOperator {
         mInterpretator = DaggerStorageInterpretatorComponent.builder().
                 storageInterpretatorModule(new StorageInterpretatorModule(mContext)).build().inject();
         mInterpretator.registerStorageEventListener(new StorageEventObserver());
-    }
-
-    public static synchronized StorageEventOperator getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new StorageEventOperator(context);
-        }
-        return mInstance;
     }
 
     public void add(String itemToAdd) {
