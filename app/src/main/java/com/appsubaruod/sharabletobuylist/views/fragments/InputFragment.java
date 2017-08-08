@@ -1,7 +1,5 @@
 package com.appsubaruod.sharabletobuylist.views.fragments;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
@@ -45,7 +43,7 @@ public class InputFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_input, container, false);
+        return inflater.inflate(R.layout.input_item, container, false);
     }
 
 }
