@@ -57,17 +57,12 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             FragmentManager manager = getSupportFragmentManager();
-            // FragmentTransaction を開始
             FragmentTransaction transaction = manager.beginTransaction();
 
-            // FragmentContainer のレイアウトに、MyFragment を割当てる
+            // Add fragments
             transaction.add(R.id.FragmentMainContainer, ItemListDialogFragment.newInstance(50));
-
-
-            // FragmentContainer のレイアウトに、MyFragment を割当てる
             transaction.add(R.id.FragmentInputContainer, InputFragment.newInstance());
 
-            // 変更を確定して FragmentTransaction を終える
             transaction.commit();
         }
     }
