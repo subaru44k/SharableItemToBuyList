@@ -30,8 +30,7 @@ public class SharableItemAdapter extends RecyclerView.Adapter<SharableItemAdapte
 
     @Override
     public void onBindViewHolder(SharableItemAdapter.ItemViewHolder holder, int position) {
-        SharableItemViewModel model = new SharableItemViewModel();
-        model.setText("hoge : " + position);
+        SharableItemViewModel model = new SharableItemViewModel(position);
         holder.getSharableItemBinding().setSharableItem(model);
     }
 

@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.appsubaruod.sharabletobuylist.views.activities.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
-        android:id="@+id/FragmentInputContainer"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        app:behavior_peekHeight="@dimen/list_item_height"
+    <data>
+        <variable
+            name="inputItem"
+            type="com.appsubaruod.sharabletobuylist.viewmodels.InputBoxViewModel"/>
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.appsubaruod.sharabletobuylist.views.activities.MainActivity"
+        tools:showIn="@layout/app_bar_main">
 
-</android.support.design.widget.CoordinatorLayout>
+        <RelativeLayout
+            android:id="@+id/FragmentInputContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:behavior_peekHeight="@dimen/list_item_height"
+            app:layout_behavior="@string/bottom_sheet_behavior" />
+
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

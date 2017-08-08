@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.views.fragments;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 
 import android.support.v4.app.Fragment;
@@ -8,17 +9,25 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appsubaruod.sharabletobuylist.R;
+import com.appsubaruod.sharabletobuylist.databinding.FragmentInputBoxBinding;
+import com.appsubaruod.sharabletobuylist.util.messages.ChangeInputBoxText;
+import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
+import com.appsubaruod.sharabletobuylist.viewmodels.InputBoxViewModel;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link InputFragment#newInstance} factory method to
+ * Use the {@link InputBoxFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InputFragment extends Fragment {
+public class InputBoxFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 
-    public InputFragment() {
+    public InputBoxFragment() {
         // Required empty public constructor
     }
 
@@ -26,11 +35,11 @@ public class InputFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment InputFragment.
+     * @return A new instance of fragment InputBoxFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static InputFragment newInstance() {
-        InputFragment fragment = new InputFragment();
+    public static InputBoxFragment newInstance() {
+        InputBoxFragment fragment = new InputBoxFragment();
         return fragment;
     }
 
@@ -39,11 +48,17 @@ public class InputFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.input_view, container, false);
+        FragmentInputBoxBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_input_box, container, false);
+
+        InputBoxViewModel model = new InputBoxViewModel(getActivity());
+        binding.setInputItem(model);
+
+        return binding.getRoot();
     }
 
 }

@@ -1,11 +1,11 @@
 package com.appsubaruod.sharabletobuylist.views.activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,12 +18,18 @@ import android.view.MenuItem;
 import android.widget.RelativeLayout;
 
 import com.appsubaruod.sharabletobuylist.R;
-import com.appsubaruod.sharabletobuylist.views.fragments.InputFragment;
+import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
+import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private final String LOG_TAG = MainActivity.class.getName();
     private BottomSheetBehavior mBottomSheetBehavior;
 
     @Override
@@ -44,6 +50,40 @@ public class MainActivity extends AppCompatActivity
 
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.FragmentInputContainer);
         mBottomSheetBehavior = BottomSheetBehavior.from(layout);
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        Log.d(LOG_TAG, "state dragging");
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        Log.d(LOG_TAG, "state settling");
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        Log.d(LOG_TAG, "state expanded");
+                        break;
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        Log.d(LOG_TAG, "state collapsed");
+                        break;
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        Log.d(LOG_TAG, "state hidden");
+                        break;
+                    case BottomSheetBehavior.PEEK_HEIGHT_AUTO:
+                        Log.d(LOG_TAG, "state peek height auto");
+                        break;
+                    default:
+                        Log.d(LOG_TAG, "state default");
+                        break;
+                }
+
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
 
         if (savedInstanceState == null) {
             FragmentManager manager = getSupportFragmentManager();
@@ -51,10 +91,24 @@ public class MainActivity extends AppCompatActivity
 
             // Add fragments
             transaction.add(R.id.FragmentMainContainer, ItemListDialogFragment.newInstance(50));
-            transaction.add(R.id.FragmentInputContainer, InputFragment.newInstance());
+            transaction.add(R.id.FragmentInputContainer, InputBoxFragment.newInstance());
 
             transaction.commit();
+
+
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -112,5 +166,11 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void handleInputBoxExpansion(ExpandInputBoxEvent event) {
+        Log.d(LOG_TAG, "handleInputBoxExpansion");
+        mBottomSheetBehavior.setState(event.getExpansionType());
     }
 }

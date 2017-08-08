@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.appsubaruod.sharabletobuylist.R;
-import com.appsubaruod.sharabletobuylist.views.SharableItemAdapter;
+import com.appsubaruod.sharabletobuylist.viewmodels.SharableItemListViewModel;
 
 /**
  * <p>A fragment that shows a list of items as a modal bottom sheet.</p>
@@ -44,6 +44,7 @@ public class ItemListDialogFragment extends BottomSheetDialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         final RecyclerView recyclerView = (RecyclerView) view;
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        recyclerView.setAdapter(new SharableItemAdapter(getArguments().getInt(ARG_ITEM_COUNT)));
+
+        new SharableItemListViewModel(getContext(), recyclerView);
     }
 }
