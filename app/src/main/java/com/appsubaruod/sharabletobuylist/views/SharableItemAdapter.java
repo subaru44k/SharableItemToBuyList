@@ -3,7 +3,6 @@ package com.appsubaruod.sharabletobuylist.views;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.appsubaruod.sharabletobuylist.R;
@@ -24,14 +23,15 @@ public class SharableItemAdapter extends RecyclerView.Adapter<SharableItemAdapte
 
     @Override
     public SharableItemAdapter.ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        SharableItemViewBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.sharable_item_view, parent, false);
+        SharableItemViewBinding binding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.getContext()),
+                R.layout.sharable_item_view, parent, false);
         return new ItemViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(SharableItemAdapter.ItemViewHolder holder, int position) {
-        SharableItemViewModel model = new SharableItemViewModel();
-        model.setText("hoge : " + position);
+        SharableItemViewModel model = new SharableItemViewModel(position);
         holder.getSharableItemBinding().setSharableItem(model);
     }
 

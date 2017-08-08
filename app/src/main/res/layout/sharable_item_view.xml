@@ -14,16 +14,16 @@
     <android.support.constraint.ConstraintLayout
         android:id="@+id/list_item"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="6dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:contentPadding="10dp"
+            android:layout_marginTop="6dp"
+            app:contentPadding="16dp"
             app:layout_anchorGravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -38,6 +38,7 @@
                 android:text="@{sharableItem.text}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@android:color/black"
+                android:onClick="@{sharableItem.onClick}"
                 tool:text="sample" />
 
         </android.support.v7.widget.CardView>
