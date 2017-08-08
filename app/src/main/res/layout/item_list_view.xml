@@ -9,4 +9,4 @@
     android:paddingBottom="@dimen/list_item_spacing_half"
     android:paddingTop="@dimen/list_item_spacing_half"
     tools:context="com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment"
-    tools:listitem="@layout/item_view"/>
+    tools:listitem="@layout/sharable_item_view"/>
