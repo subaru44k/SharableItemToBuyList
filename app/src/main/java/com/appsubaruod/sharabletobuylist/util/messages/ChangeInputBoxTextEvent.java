@@ -4,10 +4,10 @@ package com.appsubaruod.sharabletobuylist.util.messages;
  * Created by s-yamada on 2017/08/08.
  */
 
-public class ChangeInputBoxText {
+public class ChangeInputBoxTextEvent {
     private String mText;
 
-    public ChangeInputBoxText(String text) {
+    public ChangeInputBoxTextEvent(String text) {
         mText = text;
     }
 

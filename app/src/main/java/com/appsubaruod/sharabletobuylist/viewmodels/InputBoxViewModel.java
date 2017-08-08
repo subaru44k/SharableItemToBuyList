@@ -7,7 +7,7 @@ import android.view.View;
 
 import com.appsubaruod.sharabletobuylist.BR;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
-import com.appsubaruod.sharabletobuylist.util.messages.ChangeInputBoxText;
+import com.appsubaruod.sharabletobuylist.util.messages.ChangeInputBoxTextEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,7 +48,7 @@ public class InputBoxViewModel extends BaseObservable {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void changeInputBoxText(ChangeInputBoxText event) {
+    public void changeInputBoxText(ChangeInputBoxTextEvent event) {
         setInputText(event.getText());
     }
 }

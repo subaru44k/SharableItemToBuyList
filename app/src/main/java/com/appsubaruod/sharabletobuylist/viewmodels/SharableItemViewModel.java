@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.viewmodels;
 
+import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.view.View;
@@ -18,9 +19,9 @@ public class SharableItemViewModel extends BaseObservable {
     private SharableItemModel mSharableItemModel;
 
     public SharableItemViewModel(int index) {
-        mSharableItemModel = new SharableItemModel();
+        mSharableItemModel = new SharableItemModel(index);
         mIndex = index;
-        setText("Sharable item " + mIndex);
+        setText(mSharableItemModel.getText());
     }
 
     @Bindable

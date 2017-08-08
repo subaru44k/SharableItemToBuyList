@@ -8,9 +8,28 @@ import android.content.Context;
 
 public class SharableItemListModel {
     private Context mContext;
+    private static SharableItemListModel mModel;
 
-    public SharableItemListModel(Context context) {
+    private SharableItemListModel(Context context) {
         mContext = context;
+    }
+
+    public static SharableItemListModel getInstance(Context context) {
+        if (mModel == null) {
+            mModel = new SharableItemListModel(context);
+        }
+        return mModel;
+    }
+
+    public static SharableItemListModel getInstanceIfCreated() throws IllegalStateException {
+        if (mModel == null) {
+            throw new IllegalStateException();
+        }
+        return mModel;
+    }
+
+    public String getText(int index) {
+        return "sharable item " + index;
     }
 
     public int getItemCount() {

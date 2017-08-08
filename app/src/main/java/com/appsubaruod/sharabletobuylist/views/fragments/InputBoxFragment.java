@@ -10,13 +10,7 @@ import android.view.ViewGroup;
 
 import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.databinding.FragmentInputBoxBinding;
-import com.appsubaruod.sharabletobuylist.util.messages.ChangeInputBoxText;
-import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 import com.appsubaruod.sharabletobuylist.viewmodels.InputBoxViewModel;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * A simple {@link Fragment} subclass.

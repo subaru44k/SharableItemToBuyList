@@ -15,7 +15,7 @@ public class SharableItemListViewModel {
     private SharableItemListModel mSharableItemListModel;
 
     public SharableItemListViewModel(Context context, RecyclerView recyclerView) {
-        mSharableItemListModel = new SharableItemListModel(context);
+        mSharableItemListModel = SharableItemListModel.getInstance(context);
         recyclerView.setAdapter(new SharableItemAdapter(mSharableItemListModel.getItemCount()));
     }
 }
