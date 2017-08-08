@@ -8,6 +8,11 @@
     tools:context="com.appsubaruod.sharabletobuylist.views.activities.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
+    <RelativeLayout
+        android:id="@+id/FragmentMainContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
