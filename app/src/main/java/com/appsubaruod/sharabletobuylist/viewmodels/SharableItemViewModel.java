@@ -3,6 +3,7 @@ package com.appsubaruod.sharabletobuylist.viewmodels;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.util.Log;
 import android.view.View;
 
 import com.appsubaruod.sharabletobuylist.BR;
@@ -14,13 +15,13 @@ import com.appsubaruod.sharabletobuylist.models.SharableItemModel;
 
 public class SharableItemViewModel extends BaseObservable {
 
-    private int mIndex;
+    private static final String LOG_TAG = SharableItemViewModel.class.getName();
     private String mText;
     private SharableItemModel mSharableItemModel;
 
     public SharableItemViewModel(int index) {
         mSharableItemModel = new SharableItemModel(index);
-        mIndex = index;
+        Log.d(LOG_TAG, "text : " + mSharableItemModel.getText());
         setText(mSharableItemModel.getText());
     }
 

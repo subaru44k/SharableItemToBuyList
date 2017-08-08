@@ -24,7 +24,7 @@ public class InputBoxViewModel extends BaseObservable {
     private InputBoxModel mModel;
 
     public InputBoxViewModel(Context context) {
-        mModel = new InputBoxModel(context);
+        mModel = InputBoxModel.getInstance(context);
         setInputText(mModel.getTextBoxString());
         EventBus.getDefault().register(this);
     }

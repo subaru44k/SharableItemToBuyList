@@ -21,7 +21,7 @@ public class SharableItemListModel {
         return mModel;
     }
 
-    public static SharableItemListModel getInstanceIfCreated() throws IllegalStateException {
+    public static SharableItemListModel getInstanceIfCreated() {
         if (mModel == null) {
             throw new IllegalStateException();
         }
@@ -29,7 +29,7 @@ public class SharableItemListModel {
     }
 
     public String getText(int index) {
-        return "sharable item " + index;
+        return "Item " + index;
     }
 
     public int getItemCount() {

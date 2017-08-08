@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.RelativeLayout;
 
 import com.appsubaruod.sharabletobuylist.R;
+import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         Log.d(LOG_TAG, "state collapsed");
+                        // Change InputBox state
+                        InputBoxModel.getInstanceIfCreated().forceChangeInputBoxSelectionState();
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         Log.d(LOG_TAG, "state hidden");
@@ -76,7 +79,6 @@ public class MainActivity extends AppCompatActivity
                         Log.d(LOG_TAG, "state default");
                         break;
                 }
-
             }
 
             @Override

@@ -23,7 +23,9 @@ public class SharableItemAdapter extends RecyclerView.Adapter<SharableItemAdapte
 
     @Override
     public SharableItemAdapter.ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        SharableItemViewBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.sharable_item_view, parent, false);
+        SharableItemViewBinding binding = DataBindingUtil.inflate(
+                LayoutInflater.from(parent.getContext()),
+                R.layout.sharable_item_view, parent, false);
         return new ItemViewHolder(binding);
     }
 

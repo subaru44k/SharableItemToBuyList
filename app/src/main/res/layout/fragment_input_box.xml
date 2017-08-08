@@ -21,7 +21,7 @@
         tools:layout_gravity="bottom"
         tools:context="com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment">
 
-        <TextView
+        <EditText
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -29,6 +29,8 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="24dp"
             android:layout_marginTop="0dp"
+            android:gravity="top"
+            android:onClick="@{inputItem.onClick}"
             android:text="@{inputItem.inputText}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -37,8 +39,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteY="8dp"
-            tools:text="@string/sample_input_text"
-            android:onClick="@{inputItem.onClick}"/>
+            tools:text="@string/sample_input_text" />
 
         <ImageView
             android:id="@+id/imageView"

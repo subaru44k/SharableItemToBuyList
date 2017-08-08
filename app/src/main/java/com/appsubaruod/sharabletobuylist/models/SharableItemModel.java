@@ -14,7 +14,7 @@ public class SharableItemModel {
     private int mIndex;
 
     public SharableItemModel(int index) throws IllegalStateException {
-        mInputBoxModel = new InputBoxModel();
+        mInputBoxModel = InputBoxModel.getInstanceIfCreated();
         mSharableItemListModel = SharableItemListModel.getInstanceIfCreated();
         mIndex = index;
     }
@@ -27,7 +27,7 @@ public class SharableItemModel {
      * Called when one of sharable item is selected.
      */
     public void onItemSelected() {
-        mInputBoxModel.changeInputBoxSelectionState();
+        mInputBoxModel.forceChangeInputBoxSelectionState();
         EventBus.getDefault().post(new ChangeInputBoxTextEvent(mSharableItemListModel.getText(mIndex)));
     }
 }

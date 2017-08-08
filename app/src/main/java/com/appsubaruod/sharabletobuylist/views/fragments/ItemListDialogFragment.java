@@ -27,9 +27,6 @@ public class ItemListDialogFragment extends BottomSheetDialogFragment {
     // TODO: Customize parameters
     public static ItemListDialogFragment newInstance(int itemCount) {
         final ItemListDialogFragment fragment = new ItemListDialogFragment();
-        final Bundle args = new Bundle();
-        args.putInt(ARG_ITEM_COUNT, itemCount);
-        fragment.setArguments(args);
         return fragment;
     }
 
