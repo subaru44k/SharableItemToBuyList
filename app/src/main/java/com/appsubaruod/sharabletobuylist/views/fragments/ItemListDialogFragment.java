@@ -37,7 +37,7 @@ public class ItemListDialogFragment extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.item_list_view, container, false);
+        return inflater.inflate(R.layout.sharable_item_list_view, container, false);
     }
 
     @Override

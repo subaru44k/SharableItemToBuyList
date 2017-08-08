@@ -36,6 +36,8 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:text="@{sharableItem.text}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/black"
                 tool:text="sample" />
 
         </android.support.v7.widget.CardView>
