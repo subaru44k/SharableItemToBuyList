@@ -49,8 +49,8 @@ public class InputBoxModel {
     /**
      * Controls InputBox and editable state of input box.
      */
-    public void changeInputBoxSelectionState() {
-        Log.d(LOG_TAG, "changeInputBoxSelectionState : " + mExpansionState);
+    public void expandInputBox() {
+        Log.d(LOG_TAG, "expandInputBox : " + mExpansionState);
 
         switch (mExpansionState) {
             case BottomSheetBehavior.STATE_COLLAPSED:
@@ -62,8 +62,8 @@ public class InputBoxModel {
         }
     }
 
-    public void forceChangeInputBoxSelectionState() {
-        Log.d(LOG_TAG, "forceChangeInputBoxSelectionState : " + mExpansionState);
+    public void toggleInputBox() {
+        Log.d(LOG_TAG, "toggleInputBox : " + mExpansionState);
 
         switch (mExpansionState) {
             case BottomSheetBehavior.STATE_EXPANDED:
@@ -76,5 +76,26 @@ public class InputBoxModel {
                 break;
         }
 
+    }
+
+    public void forceSetInputBoxExpansionState(int state) {
+        switch (state) {
+            case BottomSheetBehavior.STATE_DRAGGING:
+            case BottomSheetBehavior.STATE_SETTLING:
+            case BottomSheetBehavior.STATE_EXPANDED:
+            case BottomSheetBehavior.STATE_COLLAPSED:
+            case BottomSheetBehavior.STATE_HIDDEN:
+                mExpansionState = state;
+                EventBus.getDefault().post(new ExpandInputBoxEvent(state));
+                break;
+            default:
+                Log.w(LOG_TAG, "forceSetInputBoxExpansionState(state) is called " +
+                        "but state is illegal : " + state);
+                break;
+        }
+    }
+
+    public int getCurrentExpansionState() {
+        return mExpansionState;
     }
 }

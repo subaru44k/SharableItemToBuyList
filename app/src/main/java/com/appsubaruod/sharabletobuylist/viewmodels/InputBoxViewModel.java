@@ -44,7 +44,7 @@ public class InputBoxViewModel extends BaseObservable {
      * @param view inputbox
      */
     public void onClick(View view) {
-        mModel.changeInputBoxSelectionState();
+        mModel.expandInputBox();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
