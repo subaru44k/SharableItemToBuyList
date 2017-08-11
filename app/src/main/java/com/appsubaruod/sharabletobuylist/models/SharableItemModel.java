@@ -27,7 +27,7 @@ public class SharableItemModel {
      * Called when one of sharable item is selected.
      */
     public void onItemSelected() {
-        mInputBoxModel.forceChangeInputBoxSelectionState();
+        mInputBoxModel.expandInputBox();
         EventBus.getDefault().post(new ChangeInputBoxTextEvent(mSharableItemListModel.getText(mIndex)));
     }
 }

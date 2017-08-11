@@ -63,11 +63,15 @@ public class MainActivity extends AppCompatActivity
                         break;
                     case BottomSheetBehavior.STATE_EXPANDED:
                         Log.d(LOG_TAG, "state expanded");
+                        // Change InputBox state
+                        InputBoxModel.getInstanceIfCreated()
+                                .forceSetInputBoxExpansionState(newState);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         Log.d(LOG_TAG, "state collapsed");
                         // Change InputBox state
-                        InputBoxModel.getInstanceIfCreated().forceChangeInputBoxSelectionState();
+                        InputBoxModel.getInstanceIfCreated()
+                                .forceSetInputBoxExpansionState(newState);
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         Log.d(LOG_TAG, "state hidden");
@@ -118,6 +122,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (InputBoxModel.getInstanceIfCreated().getCurrentExpansionState() == BottomSheetBehavior.STATE_EXPANDED) {
+            InputBoxModel.getInstanceIfCreated().toggleInputBox();
         } else {
             super.onBackPressed();
         }
