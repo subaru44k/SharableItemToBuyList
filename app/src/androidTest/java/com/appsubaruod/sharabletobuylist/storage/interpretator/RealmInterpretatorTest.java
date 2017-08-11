@@ -70,7 +70,7 @@ public class RealmInterpretatorTest {
     }
 
     @Test
-    public void add() throws Exception {
+    public void add() {
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
             public void onItemAdded(String itemAdded) {
@@ -88,7 +88,12 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
-        mLatch.await(1, TimeUnit.SECONDS);
+        try {
+            mLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
+
         assertThat(addedList, hasItem(TEST_ITEM));
         assertThat(completedList, not(hasItem(TEST_ITEM)));
 
@@ -99,7 +104,7 @@ public class RealmInterpretatorTest {
     }
 
     @Test
-    public void addSameItem() throws Exception {
+    public void addSameItem() {
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
             public void onItemAdded(String itemAdded) {
@@ -118,7 +123,11 @@ public class RealmInterpretatorTest {
         });
         mInterpretator.add(TEST_ITEM);
         mInterpretator.add(TEST_ITEM);
-        mLatch.await(1, TimeUnit.SECONDS);
+        try {
+            mLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
 
         assertThat(completedList, not(hasItem(TEST_ITEM)));
 
@@ -130,7 +139,7 @@ public class RealmInterpretatorTest {
     }
 
     @Test
-    public void addTwoItems() throws Exception {
+    public void addTwoItems() {
         mLatch = new CountDownLatch(2);
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
@@ -151,8 +160,12 @@ public class RealmInterpretatorTest {
         mInterpretator.add(TEST_ITEM);
         mInterpretator.add(TEST_ITEM2);
 
-        if (!mLatch.await(1, TimeUnit.SECONDS)) {
-            fail("onItemAdded does not called twice");
+        try {
+            if (!mLatch.await(1, TimeUnit.SECONDS)) {
+                fail("onItemAdded does not called twice");
+            }
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
         }
         List<String> itemList = mInterpretator.getAllItems().stream()
                 .map(item -> item.getItemName()).collect(Collectors.toList());
@@ -160,7 +173,7 @@ public class RealmInterpretatorTest {
     }
 
     @Test
-    public void setCompleted() throws Exception {
+    public void setCompleted() {
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
             public void onItemAdded(String itemAdded) {
@@ -179,14 +192,18 @@ public class RealmInterpretatorTest {
         });
         mInterpretator.add(TEST_ITEM);
         mInterpretator.setCompleted(TEST_ITEM, true);
-        mLatch.await(1, TimeUnit.SECONDS);
+        try {
+            mLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
 
         assertThat(addedList, hasItem(TEST_ITEM));
         assertThat(completedList, hasItem(TEST_ITEM));
     }
 
     @Test
-    public void setCompletedTwice() throws Exception {
+    public void setCompletedTwice() {
         mLatch = new CountDownLatch(2);
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
@@ -209,8 +226,12 @@ public class RealmInterpretatorTest {
         mInterpretator.setCompleted(TEST_ITEM, true);
         mInterpretator.setCompleted(TEST_ITEM, true);
 
-        if (mLatch.await(1, TimeUnit.SECONDS)) {
-            fail("onItemCompleted is unexpectedly called twice.");
+        try {
+            if (mLatch.await(1, TimeUnit.SECONDS)) {
+                fail("onItemCompleted is unexpectedly called twice.");
+            }
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
         }
         List<Item> allItem = mInterpretator.getAllItems();
         assertThat(allItem.get(0).isBought(), is(true));
@@ -218,7 +239,7 @@ public class RealmInterpretatorTest {
     }
 
     @Test
-    public void setCompletedToFalse() throws Exception {
+    public void setCompletedToFalse() {
         mLatch = new CountDownLatch(2);
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
@@ -241,8 +262,12 @@ public class RealmInterpretatorTest {
         mInterpretator.setCompleted(TEST_ITEM, true);
         mInterpretator.setCompleted(TEST_ITEM, false);
 
-        if (!mLatch.await(1, TimeUnit.SECONDS)) {
-            fail("onItemCompleted is not called twice.");
+        try {
+            if (!mLatch.await(1, TimeUnit.SECONDS)) {
+                fail("onItemCompleted is not called twice.");
+            }
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
         }
         List<Item> allItem = mInterpretator.getAllItems();
         assertThat(allItem.get(0).isBought(), is(false));
@@ -250,7 +275,7 @@ public class RealmInterpretatorTest {
     }
 
     @Test
-    public void setCompletedWithoutAdding() throws Exception {
+    public void setCompletedWithoutAdding() {
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
             public void onItemAdded(String itemAdded) {
@@ -268,14 +293,49 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.setCompleted(TEST_ITEM, true);
-        mLatch.await(1, TimeUnit.SECONDS);
+        try {
+            mLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
 
         assertThat(addedList, not(hasItem(TEST_ITEM)));
         assertThat(completedList, not(hasItem(TEST_ITEM)));
     }
 
     @Test
-    public void removeItemWithoutData() throws Exception {
+    public void setCompletedAndAdd() {
+        mLatch = new CountDownLatch(2);
+        mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
+            @Override
+            public void onItemAdded(String itemAdded) {
+                addedList.add(itemAdded);
+            }
+
+            @Override
+            public void onItemCompleted(String itemCompleted, boolean isCompleted) {
+                completedList.add(itemCompleted);
+                mLatch.countDown();
+            }
+
+            @Override
+            public void onItemDeleted(String itemDeleted) {
+            }
+        });
+        mInterpretator.add(TEST_ITEM);
+        mInterpretator.setCompleted(TEST_ITEM, true);
+        mInterpretator.add(TEST_ITEM);
+        try {
+            mLatch.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
+        assertThat(completedList.size(), is(2));
+        assertThat(completedList.get(0), is(completedList.get(1)));
+    }
+
+    @Test
+    public void removeItemWithoutData() {
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
             public void onItemAdded(String itemAdded) {
@@ -294,8 +354,12 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.removeItem(TEST_ITEM);
-        if (mLatch.await(1, TimeUnit.SECONDS)) {
-            fail("onItemDeleted was called without deletion");
+        try {
+            if (mLatch.await(1, TimeUnit.SECONDS)) {
+                fail("onItemDeleted was called without deletion");
+            }
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
         }
         List<String> itemList = mInterpretator.getAllItems().stream()
                 .map(item -> item.getItemName()).collect(Collectors.toList());
@@ -332,7 +396,7 @@ public class RealmInterpretatorTest {
     }
 
     @Test
-    public void removeItem2() throws Exception {
+    public void removeItem2() {
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
             public void onItemAdded(String itemAdded) {
@@ -353,8 +417,12 @@ public class RealmInterpretatorTest {
         mInterpretator.add(TEST_ITEM);
         mInterpretator.add(TEST_ITEM2);
         mInterpretator.removeItem(TEST_ITEM);
-        if (!mLatch.await(1, TimeUnit.SECONDS)) {
-            fail("onItemDeleted was not called");
+        try {
+            if (!mLatch.await(1, TimeUnit.SECONDS)) {
+                fail("onItemDeleted was not called");
+            }
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
         }
         List<String> itemList = mInterpretator.getAllItems().stream()
                 .map(item -> item.getItemName()).collect(Collectors.toList());

@@ -30,9 +30,11 @@ public class RealmInterpretator implements StorageInterpretator {
     public void add(String itemToAdd) {
         Realm realm = Realm.getDefaultInstance();
 
-        // if item already exists in database, then do not add and close.
+        // if item already exists in database,
+        // check its completed status and if completed then set not completed.
         if (existsItem(realm, itemToAdd)) {
             Log.w(LOG_TAG, "try to add already existing item : " + itemToAdd);
+            setCompleted(itemToAdd, false);
             realm.close();
             return;
         }
