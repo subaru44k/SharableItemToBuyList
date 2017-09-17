@@ -1,9 +1,5 @@
 package com.appsubaruod.sharabletobuylist.models;
 
-import com.appsubaruod.sharabletobuylist.util.messages.ChangeInputBoxTextEvent;
-
-import org.greenrobot.eventbus.EventBus;
-
 /**
  * Created by s-yamada on 2017/08/08.
  */
@@ -28,6 +24,6 @@ public class SharableItemModel {
      */
     public void onItemSelected() {
         mInputBoxModel.expandInputBox();
-        EventBus.getDefault().post(new ChangeInputBoxTextEvent(mSharableItemListModel.getText(mIndex)));
+        mInputBoxModel.setTextBoxString(mSharableItemListModel.getText(mIndex));
     }
 }

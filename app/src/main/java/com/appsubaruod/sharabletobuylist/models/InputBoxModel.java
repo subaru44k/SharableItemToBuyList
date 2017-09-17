@@ -9,6 +9,9 @@ import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 /**
  * Created by s-yamada on 2017/08/08.
  */
@@ -21,6 +24,10 @@ public class InputBoxModel {
     private Context mContext;
     private String mTextBoxString;
     private static int mExpansionState;
+
+    private SharableItemListModel mSharableItemListModel = SharableItemListModel.getInstanceIfCreated();
+
+    private Set<OnInputBoxChangedListener> mListenerSet = new CopyOnWriteArraySet<>();
 
     private InputBoxModel(Context context) {
         mContext = context;
@@ -42,8 +49,31 @@ public class InputBoxModel {
         return mInputBoxModel;
     }
 
+    public void setOnInputBoxChangedListener(OnInputBoxChangedListener listener) {
+        mListenerSet.add(listener);
+    }
+
     public String getTextBoxString() {
         return mTextBoxString;
+    }
+
+    /**
+     * Sets text in the text box.
+     * @param text new text set to the box
+     */
+    public void setTextBoxString(String text) {
+        mTextBoxString = text;
+        mListenerSet.stream().forEach(listener -> listener.onTextChanged(mTextBoxString));
+    }
+
+    /**
+     * Modifies item and reflect to db.
+     * @param itemName name of the item
+     */
+    public void modifyItem(String itemName) {
+        Log.d(LOG_TAG, "Modify text : " + mTextBoxString + " -> " + itemName);
+        mSharableItemListModel.modifyItem(mTextBoxString, itemName);
+        toggleInputBox();
     }
 
     /**
@@ -69,21 +99,23 @@ public class InputBoxModel {
             case BottomSheetBehavior.STATE_EXPANDED:
                 mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
+                setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
                 break;
             default:
                 mExpansionState = BottomSheetBehavior.STATE_EXPANDED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
                 break;
         }
-
     }
 
     public void forceSetInputBoxExpansionState(int state) {
         switch (state) {
+            case BottomSheetBehavior.STATE_COLLAPSED:
+                setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
+                // fall through
+            case BottomSheetBehavior.STATE_EXPANDED:
             case BottomSheetBehavior.STATE_DRAGGING:
             case BottomSheetBehavior.STATE_SETTLING:
-            case BottomSheetBehavior.STATE_EXPANDED:
-            case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_HIDDEN:
                 mExpansionState = state;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(state));
@@ -97,5 +129,9 @@ public class InputBoxModel {
 
     public int getCurrentExpansionState() {
         return mExpansionState;
+    }
+
+    public interface OnInputBoxChangedListener {
+        void onTextChanged(String text);
     }
 }
