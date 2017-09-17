@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.databinding.SharableItemViewBinding;
+import com.appsubaruod.sharabletobuylist.models.SharableItemListModel;
 import com.appsubaruod.sharabletobuylist.viewmodels.SharableItemViewModel;
 
 /**
@@ -15,10 +16,10 @@ import com.appsubaruod.sharabletobuylist.viewmodels.SharableItemViewModel;
 
 public class SharableItemAdapter extends RecyclerView.Adapter<SharableItemAdapter.ItemViewHolder> {
 
-    private final int mItemCount;
+    private final SharableItemListModel mSharableItemListModel;
 
-    public SharableItemAdapter(int itemCount) {
-        mItemCount = itemCount;
+    public SharableItemAdapter(SharableItemListModel model) {
+        mSharableItemListModel = model;
     }
 
     @Override
@@ -37,7 +38,7 @@ public class SharableItemAdapter extends RecyclerView.Adapter<SharableItemAdapte
 
     @Override
     public int getItemCount() {
-        return mItemCount;
+        return mSharableItemListModel.getItemCount();
     }
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {

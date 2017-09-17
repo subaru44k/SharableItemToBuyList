@@ -68,7 +68,7 @@ public class StorageEventOperator {
         });
     }
 
-    interface ItemsObtainedListener {
+    public interface ItemsObtainedListener {
         void onItemsObtained(List<Item> itemList);
     }
 

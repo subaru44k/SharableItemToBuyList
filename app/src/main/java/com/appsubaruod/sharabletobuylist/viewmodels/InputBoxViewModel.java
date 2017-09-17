@@ -47,6 +47,10 @@ public class InputBoxViewModel extends BaseObservable {
         mModel.expandInputBox();
     }
 
+    public void onClickAddItemButton(View view) {
+        mModel.addItem(inputText);
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void changeInputBoxText(ChangeInputBoxTextEvent event) {
         setInputText(event.getText());

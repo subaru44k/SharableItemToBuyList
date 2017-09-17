@@ -31,7 +31,7 @@
             android:layout_marginTop="0dp"
             android:gravity="top"
             android:onClick="@{inputItem.onClick}"
-            android:text="@{inputItem.inputText}"
+            android:text="@={inputItem.inputText}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/imageView"
@@ -52,6 +52,17 @@
             app:layout_constraintEnd_toStartOf="@+id/mainLayout"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_menu_camera"
+            android:onClick="@{inputItem.onClickAddItemButton}"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

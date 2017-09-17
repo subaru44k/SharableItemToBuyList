@@ -22,6 +22,8 @@ public class InputBoxModel {
     private String mTextBoxString;
     private static int mExpansionState;
 
+    private SharableItemListModel mSharableItemListModel = SharableItemListModel.getInstanceIfCreated();
+
     private InputBoxModel(Context context) {
         mContext = context;
         mTextBoxString = mContext.getResources().getString(R.string.sample_input_text);
@@ -44,6 +46,14 @@ public class InputBoxModel {
 
     public String getTextBoxString() {
         return mTextBoxString;
+    }
+
+    /**
+     * Add item to db
+     * @param itemName name of the item
+     */
+    public void addItem(String itemName) {
+        mSharableItemListModel.addItem(itemName);
     }
 
     /**
