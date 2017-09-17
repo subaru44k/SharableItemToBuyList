@@ -13,6 +13,10 @@ import com.appsubaruod.sharabletobuylist.models.SharableItemModel;
  * Created by s-yamada on 2017/08/08.
  */
 
+/**
+ * This instance is created from RecyclerAdapter.
+ * To avoid memory leakage, this instance should not be referred from any instance except for RecyclerAdapter.
+ */
 public class SharableItemViewModel extends BaseObservable {
 
     private static final String LOG_TAG = SharableItemViewModel.class.getName();

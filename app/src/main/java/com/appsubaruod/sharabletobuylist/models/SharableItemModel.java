@@ -33,6 +33,4 @@ public class SharableItemModel {
         mInputBoxModel.expandInputBox();
         mInputBoxModel.setTextBoxString(mSharableItemListModel.getText(mIndex));
     }
-
-
 }

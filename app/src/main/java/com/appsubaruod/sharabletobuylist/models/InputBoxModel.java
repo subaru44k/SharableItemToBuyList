@@ -11,6 +11,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by s-yamada on 2017/08/08.
@@ -27,7 +28,7 @@ public class InputBoxModel {
 
     private SharableItemListModel mSharableItemListModel = SharableItemListModel.getInstanceIfCreated();
 
-    private Set<OnInputBoxChangedListener> mListenerSet = new HashSet<>();
+    private Set<OnInputBoxChangedListener> mListenerSet = new CopyOnWriteArraySet<>();
 
     private InputBoxModel(Context context) {
         mContext = context;
