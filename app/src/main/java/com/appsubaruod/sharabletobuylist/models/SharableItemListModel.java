@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -31,6 +32,8 @@ public class SharableItemListModel {
         mContext = context;
         mStorageEventOperator = new StorageEventOperator(mContext);
         mStorageEventOperator.getItemsAsync(itemList -> {
+            // Reverse list to show newer items to the top
+            Collections.reverse(itemList);
             mItemList = itemList;
             notifyListItemChanged();
         });
@@ -57,9 +60,6 @@ public class SharableItemListModel {
     }
 
     public void modifyItem(String oldItemName, String newItemName) {
-        mStorageEventOperator.getItemsAsync(itemList -> {
-            itemList.forEach(item -> Log.d(LOG_TAG, "items : " + item));
-        });
         mStorageEventOperator.removeItem(oldItemName);
         mStorageEventOperator.addItem(newItemName);
     }
@@ -78,7 +78,7 @@ public class SharableItemListModel {
     @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
     public void onItemAdded(ItemAddedEvent event) {
         Log.d(LOG_TAG, "Receive item added : " + event.getItemName());
-        mItemList.add(new Item(event.getItemName(), false));
+        mItemList.add(0, new Item(event.getItemName(), false));
         notifyListItemChanged();
     }
 
@@ -86,7 +86,7 @@ public class SharableItemListModel {
     public void onItemCompleted(ItemCompletedEvent event) {
         Log.d(LOG_TAG, "Receive item completed : " + event.getItemName() + ", " + event.isCompleted());
         mItemList.removeIf(item -> item.getItemName().equals(event.getItemName()));
-        mItemList.add(new Item(event.getItemName(), event.isCompleted()));
+        mItemList.add(0, new Item(event.getItemName(), event.isCompleted()));
         notifyListItemChanged();
     }
 
