@@ -32,6 +32,7 @@ public class SharableItemListModel {
         mStorageEventOperator = new StorageEventOperator(mContext);
         mStorageEventOperator.getItemsAsync(itemList -> {
             mItemList = itemList;
+            notifyListItemChanged();
         });
 
         EventBus.getDefault().register(this);
