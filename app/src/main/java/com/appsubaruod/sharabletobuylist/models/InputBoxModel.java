@@ -9,6 +9,9 @@ import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by s-yamada on 2017/08/08.
  */
@@ -23,6 +26,8 @@ public class InputBoxModel {
     private static int mExpansionState;
 
     private SharableItemListModel mSharableItemListModel = SharableItemListModel.getInstanceIfCreated();
+
+    private Set<OnInputBoxChangedListener> mListenerSet = new HashSet<>();
 
     private InputBoxModel(Context context) {
         mContext = context;
@@ -44,8 +49,17 @@ public class InputBoxModel {
         return mInputBoxModel;
     }
 
+    public void setOnInputBoxChangedListener(OnInputBoxChangedListener listener) {
+        mListenerSet.add(listener);
+    }
+
     public String getTextBoxString() {
         return mTextBoxString;
+    }
+
+    public void setTextBoxString(String text) {
+        mTextBoxString = text;
+        mListenerSet.stream().forEach(listener -> listener.onTextChanged(mTextBoxString));
     }
 
     /**
@@ -107,5 +121,9 @@ public class InputBoxModel {
 
     public int getCurrentExpansionState() {
         return mExpansionState;
+    }
+
+    public interface OnInputBoxChangedListener {
+        void onTextChanged(String text);
     }
 }

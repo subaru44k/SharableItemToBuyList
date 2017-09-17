@@ -17,7 +17,7 @@ import org.greenrobot.eventbus.ThreadMode;
  * Created by s-yamada on 2017/08/08.
  */
 
-public class InputBoxViewModel extends BaseObservable {
+public class InputBoxViewModel extends BaseObservable implements InputBoxModel.OnInputBoxChangedListener {
 
     private String inputText;
 
@@ -26,7 +26,7 @@ public class InputBoxViewModel extends BaseObservable {
     public InputBoxViewModel(Context context) {
         mModel = InputBoxModel.getInstance(context);
         setInputText(mModel.getTextBoxString());
-        EventBus.getDefault().register(this);
+        mModel.setOnInputBoxChangedListener(this);
     }
 
     @Bindable
@@ -51,8 +51,8 @@ public class InputBoxViewModel extends BaseObservable {
         mModel.addItem(inputText);
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void changeInputBoxText(ChangeInputBoxTextEvent event) {
-        setInputText(event.getText());
+    @Override
+    public void onTextChanged(String text) {
+        setInputText(text);
     }
 }
