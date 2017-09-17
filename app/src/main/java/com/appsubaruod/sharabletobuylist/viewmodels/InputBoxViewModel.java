@@ -7,11 +7,6 @@ import android.view.View;
 
 import com.appsubaruod.sharabletobuylist.BR;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
-import com.appsubaruod.sharabletobuylist.util.messages.ChangeInputBoxTextEvent;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by s-yamada on 2017/08/08.
@@ -47,8 +42,8 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
         mModel.expandInputBox();
     }
 
-    public void onClickAddItemButton(View view) {
-        mModel.addItem(inputText);
+    public void onClickModifyItemButton(View view) {
+        mModel.modifyItem(inputText);
     }
 
     @Override

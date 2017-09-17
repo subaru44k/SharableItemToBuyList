@@ -59,7 +59,7 @@
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_menu_camera"
-            android:onClick="@{inputItem.onClickAddItemButton}"
+            android:onClick="@{inputItem.onClickModifyItemButton}"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

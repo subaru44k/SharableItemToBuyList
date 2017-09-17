@@ -57,17 +57,23 @@ public class InputBoxModel {
         return mTextBoxString;
     }
 
+    /**
+     * Sets text in the text box.
+     * @param text new text set to the box
+     */
     public void setTextBoxString(String text) {
         mTextBoxString = text;
         mListenerSet.stream().forEach(listener -> listener.onTextChanged(mTextBoxString));
     }
 
     /**
-     * Add item to db
+     * Modifies item and reflect to db.
      * @param itemName name of the item
      */
-    public void addItem(String itemName) {
-        mSharableItemListModel.addItem(itemName);
+    public void modifyItem(String itemName) {
+        Log.d(LOG_TAG, "Modify text : " + mTextBoxString + " -> " + itemName);
+        mSharableItemListModel.modifyItem(mTextBoxString, itemName);
+        toggleInputBox();
     }
 
     /**
@@ -93,21 +99,23 @@ public class InputBoxModel {
             case BottomSheetBehavior.STATE_EXPANDED:
                 mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
+                setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
                 break;
             default:
                 mExpansionState = BottomSheetBehavior.STATE_EXPANDED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
                 break;
         }
-
     }
 
     public void forceSetInputBoxExpansionState(int state) {
         switch (state) {
+            case BottomSheetBehavior.STATE_COLLAPSED:
+                setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
+                // fall through
+            case BottomSheetBehavior.STATE_EXPANDED:
             case BottomSheetBehavior.STATE_DRAGGING:
             case BottomSheetBehavior.STATE_SETTLING:
-            case BottomSheetBehavior.STATE_EXPANDED:
-            case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_HIDDEN:
                 mExpansionState = state;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(state));

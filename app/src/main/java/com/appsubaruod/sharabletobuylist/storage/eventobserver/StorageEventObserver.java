@@ -2,8 +2,10 @@ package com.appsubaruod.sharabletobuylist.storage.eventobserver;
 
 import android.util.Log;
 
-import com.appsubaruod.sharabletobuylist.message.ItemAddedEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
+import com.appsubaruod.sharabletobuylist.util.messages.ItemCompletedEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.ItemDeletedEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -21,11 +23,13 @@ public class StorageEventObserver implements StorageInterpretator.StorageEvent {
 
     @Override
     public void onItemCompleted(String itemCompleted, boolean isCompleted) {
-
+        Log.d(LOG_TAG, "Item completed : " + itemCompleted + ", " + isCompleted);
+        EventBus.getDefault().postSticky(new ItemCompletedEvent(itemCompleted, isCompleted));
     }
 
     @Override
     public void onItemDeleted(String itemDeleted) {
-
+        Log.d(LOG_TAG, "Item deleted : " + itemDeleted);
+        EventBus.getDefault().postSticky(new ItemDeletedEvent(itemDeleted));
     }
 }
