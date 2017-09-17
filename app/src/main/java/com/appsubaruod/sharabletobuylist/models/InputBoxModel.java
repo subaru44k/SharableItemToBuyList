@@ -9,7 +9,6 @@ import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 

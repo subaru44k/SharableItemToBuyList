@@ -2,8 +2,8 @@ package com.appsubaruod.sharabletobuylist.storage.eventobserver;
 
 import android.util.Log;
 
-import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
+import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemCompletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemDeletedEvent;
 

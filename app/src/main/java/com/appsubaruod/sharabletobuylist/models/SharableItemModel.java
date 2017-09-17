@@ -1,12 +1,5 @@
 package com.appsubaruod.sharabletobuylist.models;
 
-import com.appsubaruod.sharabletobuylist.util.messages.ChangeInputBoxTextEvent;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * Created by s-yamada on 2017/08/08.
  */

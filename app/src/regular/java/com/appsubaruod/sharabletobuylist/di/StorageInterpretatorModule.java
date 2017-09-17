@@ -3,7 +3,6 @@ package com.appsubaruod.sharabletobuylist.di;
 import android.content.Context;
 
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
-import com.appsubaruod.sharabletobuylist.storage.interpretator.MockInterpretator;
 import com.appsubaruod.sharabletobuylist.storage.interpretator.RealmInterpretator;
 
 import dagger.Module;

@@ -1,6 +1,5 @@
 package com.appsubaruod.sharabletobuylist.viewmodels;
 
-import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.util.Log;

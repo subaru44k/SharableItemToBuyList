@@ -3,8 +3,8 @@ package com.appsubaruod.sharabletobuylist.models;
 import android.content.Context;
 import android.util.Log;
 
-import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.storage.eventoperator.StorageEventOperator;
+import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemCompletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemDeletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ListItemChangedEvent;
