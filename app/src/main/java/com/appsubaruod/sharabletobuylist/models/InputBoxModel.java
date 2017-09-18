@@ -1,11 +1,14 @@
 package com.appsubaruod.sharabletobuylist.models;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.R;
+import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -74,6 +77,16 @@ public class InputBoxModel {
         Log.d(LOG_TAG, "Modify text : " + mTextBoxString + " -> " + itemName);
         mSharableItemListModel.modifyItem(mTextBoxString, itemName);
         toggleInputBox();
+
+        sendModifyEventLog(itemName);
+    }
+
+    private void sendModifyEventLog(String itemName) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalyticsOperator.Param.OLD_ITEM_NAME, mTextBoxString);
+        bundle.putString(FirebaseAnalyticsOperator.Param.NEW_ITEM_NAME, itemName);
+        FirebaseAnalyticsOperator.getInstanceIfCreated()
+                .logEvent(FirebaseAnalyticsOperator.Event.MODIFY_CONTENT, bundle);
     }
 
     /**

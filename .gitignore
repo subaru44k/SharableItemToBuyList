@@ -20,6 +20,7 @@ proguard/
 *.ipr
 *.iws
 app/build/
+app/google-services.json
 
 .idea/*.xml
 
