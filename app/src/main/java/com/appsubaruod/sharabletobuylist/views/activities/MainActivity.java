@@ -19,9 +19,11 @@ import android.widget.RelativeLayout;
 
 import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
+import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,12 +35,16 @@ public class MainActivity extends AppCompatActivity
     private final String LOG_TAG = MainActivity.class.getName();
     private BottomSheetBehavior mBottomSheetBehavior;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mFirebaseAnalytics = FirebaseAnalyticsOperator.getInstance(this);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -100,8 +106,6 @@ public class MainActivity extends AppCompatActivity
             transaction.add(R.id.FragmentInputContainer, InputBoxFragment.newInstance());
 
             transaction.commit();
-
-
         }
     }
 

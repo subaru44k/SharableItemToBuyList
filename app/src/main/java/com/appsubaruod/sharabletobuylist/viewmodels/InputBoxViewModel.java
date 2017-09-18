@@ -43,7 +43,7 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
     }
 
     public void onClickModifyItemButton(View view) {
-        mModel.modifyItem(inputText);
+        mModel.modifyItem(getInputText());;
     }
 
     @Override
