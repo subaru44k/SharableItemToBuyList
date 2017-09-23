@@ -26,12 +26,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Created by s-yamada on 2017/07/29.
+ * Created by s-yamada on 2017/09/19.
  */
 @RunWith(AndroidJUnit4.class)
-public class RealmInterpretatorTest {
+public class FirebaseInterpretatorTest {
+
     public static final String TEST_ITEM = "hoge";
     public static final String TEST_ITEM2 = "foo";
+    public static final int MILLIS = 200;
     StorageInterpretator mInterpretator;
     private List<String> addedList;
     private List<String> completedList;
@@ -39,8 +41,8 @@ public class RealmInterpretatorTest {
     private boolean isCompletedValue;
     private CountDownLatch mLatch;
 
-    public RealmInterpretatorTest() {
-        mInterpretator = new RealmInterpretator(
+    public FirebaseInterpretatorTest() {
+        mInterpretator = new FirebaseInterpretator(
                 InstrumentationRegistry.getTargetContext());
     }
 
@@ -51,11 +53,12 @@ public class RealmInterpretatorTest {
         deletedList = new ArrayList<>();
         mLatch = new CountDownLatch(1);
         mInterpretator.removeAllItems();
+        waitAWhile();
     }
 
     @After
     public void tearDown() {
-        mInterpretator.removeAllItems();
+        //mInterpretator.removeAllItems();
     }
 
     @Test
@@ -87,6 +90,7 @@ public class RealmInterpretatorTest {
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
+        waitAWhile();
         assertThat(mInterpretator.getAllItems().size(), is(1));
     }
 
@@ -114,7 +118,7 @@ public class RealmInterpretatorTest {
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
-
+        waitAWhile();
         assertThat(addedList, hasItem(TEST_ITEM));
         assertThat(completedList, not(hasItem(TEST_ITEM)));
 
@@ -122,6 +126,14 @@ public class RealmInterpretatorTest {
                 .map(item -> item.getItemName()).collect(Collectors.toList());
         Log.d("item list" , Integer.toString(itemList.size()));
         assertThat(itemList, is(contains(TEST_ITEM)));
+    }
+
+    private void waitAWhile() {
+        try {
+            Thread.sleep(MILLIS);
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -142,13 +154,9 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
+        waitAWhile();
         mInterpretator.add(TEST_ITEM);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            fail(e.getMessage());
-        }
-
+        waitAWhile();
         assertThat(completedList, not(hasItem(TEST_ITEM)));
 
         List<String> itemList = mInterpretator.getAllItems().stream()
@@ -164,6 +172,7 @@ public class RealmInterpretatorTest {
         mInterpretator.registerStorageEventListener(new StorageInterpretator.StorageEvent() {
             @Override
             public void onItemAdded(String itemAdded) {
+                Log.d("added", "added : " + itemAdded);
                 mLatch.countDown();
             }
 
@@ -178,7 +187,9 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
+        waitAWhile();
         mInterpretator.add(TEST_ITEM2);
+        waitAWhile();
 
         try {
             if (!mLatch.await(1, TimeUnit.SECONDS)) {
@@ -211,13 +222,14 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
+        waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, true);
         try {
             mLatch.await(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
-
+        waitAWhile();
         assertThat(addedList, hasItem(TEST_ITEM));
         assertThat(completedList, hasItem(TEST_ITEM));
     }
@@ -243,9 +255,10 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
+        waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, true);
+        waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, true);
-
         try {
             if (mLatch.await(1, TimeUnit.SECONDS)) {
                 fail("onItemCompleted is unexpectedly called twice.");
@@ -253,6 +266,7 @@ public class RealmInterpretatorTest {
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
+        waitAWhile();
         List<Item> allItem = mInterpretator.getAllItems();
         assertThat(allItem.get(0).isBought(), is(true));
         assertThat(isCompletedValue, is(true));
@@ -279,9 +293,10 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
+        waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, true);
+        waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, false);
-
         try {
             if (!mLatch.await(1, TimeUnit.SECONDS)) {
                 fail("onItemCompleted is not called twice.");
@@ -289,6 +304,7 @@ public class RealmInterpretatorTest {
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
+        waitAWhile();
         List<Item> allItem = mInterpretator.getAllItems();
         assertThat(allItem.get(0).isBought(), is(false));
         assertThat(isCompletedValue, is(false));
@@ -318,7 +334,7 @@ public class RealmInterpretatorTest {
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
-
+        waitAWhile();
         assertThat(addedList, not(hasItem(TEST_ITEM)));
         assertThat(completedList, not(hasItem(TEST_ITEM)));
     }
@@ -343,13 +359,16 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
+        waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, true);
+        waitAWhile();
         mInterpretator.add(TEST_ITEM);
         try {
             mLatch.await(1, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
+        waitAWhile();
         assertThat(completedList.size(), is(2));
         assertThat(completedList.get(0), is(completedList.get(1)));
     }
@@ -381,6 +400,7 @@ public class RealmInterpretatorTest {
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
+        waitAWhile();
         List<String> itemList = mInterpretator.getAllItems().stream()
                 .map(item -> item.getItemName()).collect(Collectors.toList());
         assertThat(itemList.size(), is(0));
@@ -406,10 +426,12 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
+        waitAWhile();
         mInterpretator.removeItem(TEST_ITEM);
         if (!mLatch.await(1, TimeUnit.SECONDS)) {
             fail("onItemDeleted was not called");
         }
+        waitAWhile();
         List<String> itemList = mInterpretator.getAllItems()
                 .stream().map(item -> item.getItemName()).collect(Collectors.toList());
         assertThat(itemList.size(), is(0));
@@ -435,7 +457,9 @@ public class RealmInterpretatorTest {
             }
         });
         mInterpretator.add(TEST_ITEM);
+        waitAWhile();
         mInterpretator.add(TEST_ITEM2);
+        waitAWhile();
         mInterpretator.removeItem(TEST_ITEM);
         try {
             if (!mLatch.await(1, TimeUnit.SECONDS)) {
@@ -444,6 +468,7 @@ public class RealmInterpretatorTest {
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
+        waitAWhile();
         List<String> itemList = mInterpretator.getAllItems().stream()
                 .map(item -> item.getItemName()).collect(Collectors.toList());
         assertThat(itemList.size(), is(1));

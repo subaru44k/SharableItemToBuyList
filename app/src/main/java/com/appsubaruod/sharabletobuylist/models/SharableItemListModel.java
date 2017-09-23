@@ -85,15 +85,25 @@ public class SharableItemListModel {
     @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
     public void onItemCompleted(ItemCompletedEvent event) {
         Log.d(LOG_TAG, "Receive item completed : " + event.getItemName() + ", " + event.isCompleted());
-        mItemList.removeIf(item -> item.getItemName().equals(event.getItemName()));
+        mItemList.remove(getIndexOfTheItem(event.getItemName()));
         mItemList.add(0, new Item(event.getItemName(), event.isCompleted()));
         notifyListItemChanged();
+    }
+
+    private int getIndexOfTheItem(String itemName) {
+        final int[] index = new int[1];
+        mItemList.forEach(item -> {
+            if (item.getItemName().equals(itemName)) {
+                index[0] = mItemList.indexOf(item);
+            }
+        });
+        return index[0];
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
     public void onItemDeleted(ItemDeletedEvent event) {
         Log.d(LOG_TAG, "Receive item deleted : " + event.getItemName());
-        mItemList.removeIf(item -> item.getItemName().equals(event.getItemName()));
+        mItemList.remove(getIndexOfTheItem(event.getItemName()));
         notifyListItemChanged();
     }
 

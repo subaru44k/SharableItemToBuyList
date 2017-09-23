@@ -3,6 +3,7 @@ package com.appsubaruod.sharabletobuylist.di;
 import android.content.Context;
 
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
+import com.appsubaruod.sharabletobuylist.storage.interpretator.FirebaseInterpretator;
 import com.appsubaruod.sharabletobuylist.storage.interpretator.RealmInterpretator;
 
 import dagger.Module;
@@ -21,6 +22,6 @@ public class StorageInterpretatorModule {
 
     @Provides
     public StorageInterpretator provideStorageInterpretator() {
-        return new RealmInterpretator(mContext);
+        return new FirebaseInterpretator(mContext);
     }
 }

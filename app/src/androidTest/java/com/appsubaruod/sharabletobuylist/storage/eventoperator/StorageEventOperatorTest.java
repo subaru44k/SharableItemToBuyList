@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 public class StorageEventOperatorTest {
     StorageEventOperator mOperator;
     CountDownLatch mLatch;
+    public static final int MILLIS = 200;
 
     @Before
     public void setUp() {
@@ -38,6 +39,7 @@ public class StorageEventOperatorTest {
     @Test
     public void addAndGetItem() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(1));
             assertThat(itemList.get(0).getItemName(), equalTo("hoge"));
@@ -70,7 +72,9 @@ public class StorageEventOperatorTest {
     @Test
     public void removeItem() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.removeItem("hoge");
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(0));
             mLatch.countDown();
@@ -87,6 +91,7 @@ public class StorageEventOperatorTest {
     @Test
     public void removeAllItemsWithEmptyDb() {
         mOperator.removeAllItems();
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(0));
             mLatch.countDown();
@@ -103,8 +108,11 @@ public class StorageEventOperatorTest {
     @Test
     public void removeAllItems() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.addItem("fuga");
+        waitAWhile();
         mOperator.removeAllItems();
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(0));
             mLatch.countDown();
@@ -121,7 +129,9 @@ public class StorageEventOperatorTest {
     @Test
     public void completeItem() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.setItemCompleted("hoge", true);
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(1));
             assertThat(itemList.get(0).isBought(), is(true));
@@ -139,8 +149,11 @@ public class StorageEventOperatorTest {
     @Test
     public void addCompletedItem() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.setItemCompleted("hoge", true);
+        waitAWhile();
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(1));
             assertThat(itemList.get(0).isBought(), is(false));
@@ -150,6 +163,14 @@ public class StorageEventOperatorTest {
             if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    private void waitAWhile() {
+        try {
+            Thread.sleep(MILLIS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
