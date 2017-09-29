@@ -12,6 +12,8 @@ dependencies:
   override:
     - echo y | android update sdk --no-ui --all --filter "build-tools-25.0.2","android-26"
 test:
+  pre:
+    - openssl aes-256-cbc -d -in ci/google-services.json.enc -out app/google-services.json -k ${DECRIPTION_KEY}
   override:
     - emulator -avd circleci-android24 -no-window:
         background: true
