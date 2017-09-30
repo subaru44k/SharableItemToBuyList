@@ -12,6 +12,8 @@ dependencies:
   override:
     - echo y | android update sdk --no-ui --all --filter "build-tools-25.0.2","android-26"
 test:
+  pre:
+    - openssl aes-256-cbc -d -in ci/google-services.json.enc -out app/google-services.json -k ${DECRIPTION_KEY}
   override:
     - emulator -avd circleci-android24 -no-window:
         background: true
@@ -19,6 +21,7 @@ test:
     - ./gradlew testLocalunittestDebugUnitTest --console=plain
     - circle-android wait-for-boot
     - ./gradlew createRegularDebugCoverageReport --console=plain
+    - $ANDROID_HOME/platform-tools/adb -s emulator-5554 emu kill
     - ./gradlew assembleRegularRelease --console=plain
     - mkdir -p $CIRCLE_ARTIFACTS/outputs && cp -r app/build/outputs $CIRCLE_ARTIFACTS/outputs
     - mkdir -p $CIRCLE_ARTIFACTS/reports && cp -r app/build/reports $CIRCLE_ARTIFACTS/reports
