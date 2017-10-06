@@ -2,6 +2,7 @@ package com.appsubaruod.sharabletobuylist.storage.interpretator;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.models.Item;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
  */
 
 public class FirebaseInterpretator implements StorageInterpretator {
+    private final Object mLock = new Object();
     private static final String LOG_TAG = FirebaseInterpretator.class.getName();
     public static final String ITEM_OBJECT = "itemObject";
     public static final String UNIQUE_KEY_MAP = "uniqueKeyMap";
@@ -56,33 +58,35 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(LOG_TAG, "ValueEventListener.onDataChanged");
-                HashMap<String, HashMap<String, Object>> map = ((HashMap) dataSnapshot.getValue());
+                synchronized (mLock) {
+                    Log.d(LOG_TAG, "ValueEventListener.onDataChanged");
+                    HashMap<String, HashMap<String, Object>> map = ((HashMap) dataSnapshot.getValue());
 
-                HashMap<String, HashMap<String, String>> itemMap;
-                HashMap<String, String> keyMap;
+                    HashMap<String, HashMap<String, String>> itemMap;
+                    HashMap<String, String> keyMap;
 
-                if (map == null) {
-                    itemMap = new HashMap<>();
-                    keyMap = new HashMap<>();
-                } else {
-                    itemMap = (HashMap) map.get(ITEM_OBJECT);
-                    keyMap = (HashMap) map.get(UNIQUE_KEY_MAP);
+                    if (map == null) {
+                        itemMap = new HashMap<>();
+                        keyMap = new HashMap<>();
+                    } else {
+                        itemMap = (HashMap) map.get(ITEM_OBJECT);
+                        keyMap = (HashMap) map.get(UNIQUE_KEY_MAP);
+                    }
+
+                    CompletableFuture<Void> itemListUpdateFuture =
+                            CompletableFuture.supplyAsync(() -> itemMap)
+                                    .thenAcceptAsync(itemUpdate);
+
+                    CompletableFuture<Void> keyUpdateFuture =
+                            CompletableFuture.supplyAsync(() -> keyMap)
+                                    .thenAcceptAsync(keyUpdate);
+
+                    itemListUpdateFuture.runAfterBoth(keyUpdateFuture, () -> {
+                        // count down to invoke waiting thread.
+                        // note couldDown() do nothing if could is already 0.
+                        mItemObtainedLatch.countDown();
+                    });
                 }
-
-                CompletableFuture<Void> itemListUpdateFuture =
-                        CompletableFuture.supplyAsync(() -> itemMap)
-                        .thenAcceptAsync(itemUpdate);
-
-                CompletableFuture<Void> keyUpdateFuture =
-                        CompletableFuture.supplyAsync(() -> keyMap)
-                        .thenAcceptAsync(keyUpdate);
-
-                itemListUpdateFuture.runAfterBoth(keyUpdateFuture, () -> {
-                    // count down to invoke waiting thread.
-                    // note couldDown() do nothing if could is already 0.
-                    mItemObtainedLatch.countDown();
-                });
             }
 
             @Override
@@ -178,36 +182,38 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
     @Override
     public void add(String itemToAdd) {
-        // TODO quick add operation can add same value.
-        // Also it can occur on off line mode and multi update from other user.
-        if (mKeyMap.containsKey(itemToAdd)) {
-            setCompleted(itemToAdd, false);
-            return;
+        synchronized (mLock) {
+            // TODO quick add operation can add same value.
+            // Also it can occur on off line mode and multi update from other user.
+            if (mKeyMap.containsKey(itemToAdd)) {
+                setCompleted(itemToAdd, false);
+                return;
+            }
+
+            DatabaseReference rootReference = getRootReference();
+            DatabaseReference dataReference = getDataReference();
+
+            String key = dataReference.push().getKey();
+
+            Map<String, Object> childUpdates = new HashMap<>();
+            String itemObjectPath =
+                    (new StringBuilder())
+                            .append("/")
+                            .append(ITEM_OBJECT)
+                            .append("/")
+                            .toString();
+            String uniqueKeyMapPath =
+                    (new StringBuilder())
+                            .append("/")
+                            .append(UNIQUE_KEY_MAP)
+                            .append("/")
+                            .toString();
+            childUpdates.put(itemObjectPath + key + "/bought", "false");
+            childUpdates.put(itemObjectPath + key + "/itemName", itemToAdd);
+            childUpdates.put(uniqueKeyMapPath + itemToAdd, key);
+
+            rootReference.updateChildren(childUpdates);
         }
-
-        DatabaseReference rootReference = getRootReference();
-        DatabaseReference dataReference = getDataReference();
-
-        String key = dataReference.push().getKey();
-
-        Map<String, Object> childUpdates = new HashMap<>();
-        String itemObjectPath =
-                (new StringBuilder())
-                        .append("/")
-                        .append(ITEM_OBJECT)
-                        .append("/")
-                        .toString();
-        String uniqueKeyMapPath =
-                (new StringBuilder())
-                        .append("/")
-                        .append(UNIQUE_KEY_MAP)
-                        .append("/")
-                        .toString();
-        childUpdates.put(itemObjectPath + key + "/bought", "false");
-        childUpdates.put(itemObjectPath + key + "/itemName", itemToAdd);
-        childUpdates.put(uniqueKeyMapPath + itemToAdd, key);
-
-        rootReference.updateChildren(childUpdates);
     }
 
     private DatabaseReference getRootReference() {
@@ -224,31 +230,33 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
     @Override
     public void removeItem(String itemToDelete) {
-        if (!mKeyMap.containsKey(itemToDelete)) {
-            return;
+        synchronized (mLock) {
+            if (!mKeyMap.containsKey(itemToDelete)) {
+                return;
+            }
+
+            String key = mKeyMap.get(itemToDelete);
+            DatabaseReference rootReference = getRootReference();
+
+            Map<String, Object> childRemoval = new HashMap<>();
+            String itemObjectPath =
+                    (new StringBuilder())
+                            .append("/")
+                            .append(ITEM_OBJECT)
+                            .append("/")
+                            .toString();
+            String uniqueKeyMapPath =
+                    (new StringBuilder())
+                            .append("/")
+                            .append(UNIQUE_KEY_MAP)
+                            .append("/")
+                            .toString();
+            childRemoval.put(itemObjectPath + key + "/bought", null);
+            childRemoval.put(itemObjectPath + key + "/itemName", null);
+            childRemoval.put(uniqueKeyMapPath + itemToDelete, null);
+
+            rootReference.updateChildren(childRemoval);
         }
-
-        String key = mKeyMap.get(itemToDelete);
-        DatabaseReference rootReference = getRootReference();
-
-        Map<String, Object> childRemoval = new HashMap<>();
-        String itemObjectPath =
-                (new StringBuilder())
-                        .append("/")
-                        .append(ITEM_OBJECT)
-                        .append("/")
-                        .toString();
-        String uniqueKeyMapPath =
-                (new StringBuilder())
-                        .append("/")
-                        .append(UNIQUE_KEY_MAP)
-                        .append("/")
-                        .toString();
-        childRemoval.put(itemObjectPath + key + "/bought", null);
-        childRemoval.put(itemObjectPath + key + "/itemName", null);
-        childRemoval.put(uniqueKeyMapPath + itemToDelete, null);
-
-        rootReference.updateChildren(childRemoval);
     }
 
     @Override
@@ -270,16 +278,18 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
     @Override
     public void setCompleted(String itemToSetCompleted, boolean isCompleted) {
-        if (!mKeyMap.containsKey(itemToSetCompleted)) {
-            return;
-        }
-        if (mKeyMap.get(itemToSetCompleted).equals(isCompleted)) {
-            return;
-        }
+        synchronized (mLock) {
+            if (!mKeyMap.containsKey(itemToSetCompleted)) {
+                return;
+            }
+            if (mKeyMap.get(itemToSetCompleted).equals(isCompleted)) {
+                return;
+            }
 
-        DatabaseReference dataReference = getDataReference();
-        dataReference.child(mKeyMap.get(itemToSetCompleted))
-                .setValue(new FirebaseItem(itemToSetCompleted, isCompleted));
+            DatabaseReference dataReference = getDataReference();
+            dataReference.child(mKeyMap.get(itemToSetCompleted))
+                    .setValue(new FirebaseItem(itemToSetCompleted, isCompleted));
+        }
     }
 
     @Override

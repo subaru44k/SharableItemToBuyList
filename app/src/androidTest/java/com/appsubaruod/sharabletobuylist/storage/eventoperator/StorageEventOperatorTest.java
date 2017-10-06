@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
  */
 @RunWith(AndroidJUnit4.class)
 public class StorageEventOperatorTest {
+    public static final int TIMEOUT = 500;
     StorageEventOperator mOperator;
     CountDownLatch mLatch;
     public static final int MILLIS = 200;
@@ -46,7 +47,7 @@ public class StorageEventOperatorTest {
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("add timeout");
             }
         } catch (InterruptedException e) {
@@ -61,7 +62,7 @@ public class StorageEventOperatorTest {
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -80,7 +81,7 @@ public class StorageEventOperatorTest {
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -97,7 +98,7 @@ public class StorageEventOperatorTest {
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -118,7 +119,7 @@ public class StorageEventOperatorTest {
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -138,7 +139,7 @@ public class StorageEventOperatorTest {
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -160,7 +161,7 @@ public class StorageEventOperatorTest {
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
