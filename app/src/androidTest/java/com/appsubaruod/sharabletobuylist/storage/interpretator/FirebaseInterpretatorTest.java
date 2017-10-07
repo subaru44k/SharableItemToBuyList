@@ -33,7 +33,7 @@ public class FirebaseInterpretatorTest {
 
     public static final String TEST_ITEM = "hoge";
     public static final String TEST_ITEM2 = "foo";
-    public static final int MILLIS = 200;
+    public static final int MILLIS = 500;
     StorageInterpretator mInterpretator;
     private List<String> addedList;
     private List<String> completedList;
