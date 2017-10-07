@@ -70,15 +70,23 @@ public class FirebaseInterpretator implements StorageInterpretator {
                         keyMap = new HashMap<>();
                     } else {
                         itemMap = (HashMap) map.get(ITEM_OBJECT);
+                        if (itemMap == null) {
+                            itemMap = new HashMap<>();
+                        }
                         keyMap = (HashMap) map.get(UNIQUE_KEY_MAP);
+                        if (keyMap == null) {
+                            keyMap = new HashMap<>();
+                        }
                     }
 
+                    HashMap<String, HashMap<String, String>> finalItemMap = itemMap;
                     CompletableFuture<Void> itemListUpdateFuture =
-                            CompletableFuture.supplyAsync(() -> itemMap)
+                            CompletableFuture.supplyAsync(() -> finalItemMap)
                                     .thenAcceptAsync(itemUpdate);
 
+                    HashMap<String, String> finalKeyMap = keyMap;
                     CompletableFuture<Void> keyUpdateFuture =
-                            CompletableFuture.supplyAsync(() -> keyMap)
+                            CompletableFuture.supplyAsync(() -> finalKeyMap)
                                     .thenAcceptAsync(keyUpdate);
 
                     itemListUpdateFuture.runAfterBoth(keyUpdateFuture, () -> {

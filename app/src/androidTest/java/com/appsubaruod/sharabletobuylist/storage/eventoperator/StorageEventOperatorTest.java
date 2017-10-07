@@ -21,10 +21,10 @@ import static org.junit.Assert.fail;
  */
 @RunWith(AndroidJUnit4.class)
 public class StorageEventOperatorTest {
-    public static final int TIMEOUT = 500;
+    public static final int TIMEOUT = 2000;
     StorageEventOperator mOperator;
     CountDownLatch mLatch;
-    public static final int MILLIS = 200;
+    public static final int MILLIS = 1000;
 
     @Before
     public void setUp() {
