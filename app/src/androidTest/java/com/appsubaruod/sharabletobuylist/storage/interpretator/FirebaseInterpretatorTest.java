@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -201,7 +202,7 @@ public class FirebaseInterpretatorTest {
         }
         List<String> itemList = mInterpretator.getAllItems().stream()
                 .map(item -> item.getItemName()).collect(Collectors.toList());
-        assertThat(itemList, is(contains(TEST_ITEM, TEST_ITEM2)));
+        assertThat(itemList, is(containsInAnyOrder(TEST_ITEM, TEST_ITEM2)));
     }
 
     @Test
