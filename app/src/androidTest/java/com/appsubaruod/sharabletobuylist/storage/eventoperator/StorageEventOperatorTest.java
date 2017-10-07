@@ -21,10 +21,10 @@ import static org.junit.Assert.fail;
  */
 @RunWith(AndroidJUnit4.class)
 public class StorageEventOperatorTest {
-    public static final int TIMEOUT = 2000;
+    public static final int TIMEOUT = 5000;
     StorageEventOperator mOperator;
     CountDownLatch mLatch;
-    public static final int MILLIS = 1000;
+    public static final int WAIT_MILLIS = 500;
 
     @Before
     public void setUp() {
@@ -171,7 +171,7 @@ public class StorageEventOperatorTest {
 
     private void waitAWhile() {
         try {
-            Thread.sleep(MILLIS);
+            Thread.sleep(WAIT_MILLIS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }

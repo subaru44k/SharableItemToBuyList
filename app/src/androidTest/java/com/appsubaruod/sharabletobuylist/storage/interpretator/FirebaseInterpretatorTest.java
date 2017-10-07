@@ -33,7 +33,8 @@ public class FirebaseInterpretatorTest {
 
     public static final String TEST_ITEM = "hoge";
     public static final String TEST_ITEM2 = "foo";
-    public static final int MILLIS = 1000;
+    public static final int TIMEOUT = 5000;
+    public static final int WAIT_MILLIS = 500;
     StorageInterpretator mInterpretator;
     private List<String> addedList;
     private List<String> completedList;
@@ -86,7 +87,7 @@ public class FirebaseInterpretatorTest {
         });
         mInterpretator.add(TEST_ITEM);
         try {
-            mLatch.await(1, TimeUnit.SECONDS);
+            mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
@@ -114,7 +115,7 @@ public class FirebaseInterpretatorTest {
         });
         mInterpretator.add(TEST_ITEM);
         try {
-            mLatch.await(1, TimeUnit.SECONDS);
+            mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
@@ -130,7 +131,7 @@ public class FirebaseInterpretatorTest {
 
     private void waitAWhile() {
         try {
-            Thread.sleep(MILLIS);
+            Thread.sleep(WAIT_MILLIS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
@@ -192,7 +193,7 @@ public class FirebaseInterpretatorTest {
         waitAWhile();
 
         try {
-            if (!mLatch.await(1, TimeUnit.SECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("onItemAdded does not called twice");
             }
         } catch (InterruptedException e) {
@@ -225,7 +226,7 @@ public class FirebaseInterpretatorTest {
         waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, true);
         try {
-            mLatch.await(1, TimeUnit.SECONDS);
+            mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
@@ -260,7 +261,7 @@ public class FirebaseInterpretatorTest {
         waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, true);
         try {
-            if (mLatch.await(1, TimeUnit.SECONDS)) {
+            if (mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("onItemCompleted is unexpectedly called twice.");
             }
         } catch (InterruptedException e) {
@@ -298,7 +299,7 @@ public class FirebaseInterpretatorTest {
         waitAWhile();
         mInterpretator.setCompleted(TEST_ITEM, false);
         try {
-            if (!mLatch.await(1, TimeUnit.SECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("onItemCompleted is not called twice.");
             }
         } catch (InterruptedException e) {
@@ -330,7 +331,7 @@ public class FirebaseInterpretatorTest {
         });
         mInterpretator.setCompleted(TEST_ITEM, true);
         try {
-            mLatch.await(1, TimeUnit.SECONDS);
+            mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
@@ -364,7 +365,7 @@ public class FirebaseInterpretatorTest {
         waitAWhile();
         mInterpretator.add(TEST_ITEM);
         try {
-            mLatch.await(1, TimeUnit.SECONDS);
+            mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
@@ -394,7 +395,7 @@ public class FirebaseInterpretatorTest {
         });
         mInterpretator.removeItem(TEST_ITEM);
         try {
-            if (mLatch.await(1, TimeUnit.SECONDS)) {
+            if (mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("onItemDeleted was called without deletion");
             }
         } catch (InterruptedException e) {
@@ -428,7 +429,7 @@ public class FirebaseInterpretatorTest {
         mInterpretator.add(TEST_ITEM);
         waitAWhile();
         mInterpretator.removeItem(TEST_ITEM);
-        if (!mLatch.await(1, TimeUnit.SECONDS)) {
+        if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
             fail("onItemDeleted was not called");
         }
         waitAWhile();
@@ -462,7 +463,7 @@ public class FirebaseInterpretatorTest {
         waitAWhile();
         mInterpretator.removeItem(TEST_ITEM);
         try {
-            if (!mLatch.await(1, TimeUnit.SECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("onItemDeleted was not called");
             }
         } catch (InterruptedException e) {
