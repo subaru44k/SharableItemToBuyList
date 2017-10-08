@@ -8,6 +8,7 @@ import android.util.Log;
 import com.appsubaruod.sharabletobuylist.models.Item;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 import com.appsubaruod.sharabletobuylist.storage.firebase.FirebaseItem;
+import com.appsubaruod.sharabletobuylist.util.FirebasePersistentDatabase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,7 +48,8 @@ public class FirebaseInterpretator implements StorageInterpretator {
     private CountDownLatch mItemObtainedLatch = new CountDownLatch(1);
 
     public FirebaseInterpretator(Context context) {
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseDatabase = FirebasePersistentDatabase.getInstance();
+
         // do not store context
         startMonitoringItemChange();
     }
@@ -269,7 +271,9 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
     @Override
     public void removeAllItems() {
-        getRootReference().removeValue();
+        synchronized (mLock) {
+            getRootReference().removeValue();
+        }
     }
 
     @Override
