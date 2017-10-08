@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -22,14 +23,20 @@ import static org.junit.Assert.fail;
 @RunWith(AndroidJUnit4.class)
 public class StorageEventOperatorTest {
     public static final int TIMEOUT = 5000;
-    StorageEventOperator mOperator;
+    static StorageEventOperator mOperator;
     CountDownLatch mLatch;
     public static final int WAIT_MILLIS = 500;
 
+
+    @BeforeClass
+    public static void initialize() {
+        mOperator = new StorageEventOperator(InstrumentationRegistry.getTargetContext());
+    }
+
     @Before
     public void setUp() {
-        mOperator = new StorageEventOperator(InstrumentationRegistry.getTargetContext());
         mOperator.removeAllItems();
+        waitAWhile();
         mLatch = new CountDownLatch(1);
     }
 

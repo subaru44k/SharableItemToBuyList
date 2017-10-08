@@ -271,9 +271,7 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
     @Override
     public void removeAllItems() {
-        synchronized (mLock) {
-            getRootReference().removeValue();
-        }
+        getRootReference().removeValue();
     }
 
     @Override

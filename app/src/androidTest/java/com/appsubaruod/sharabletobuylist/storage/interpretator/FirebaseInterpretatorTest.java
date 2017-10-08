@@ -9,6 +9,7 @@ import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -36,14 +37,15 @@ public class FirebaseInterpretatorTest {
     public static final String TEST_ITEM2 = "foo";
     public static final int TIMEOUT = 5000;
     public static final int WAIT_MILLIS = 500;
-    StorageInterpretator mInterpretator;
+    static StorageInterpretator mInterpretator;
     private List<String> addedList;
     private List<String> completedList;
     private List<String> deletedList;
     private boolean isCompletedValue;
     private CountDownLatch mLatch;
 
-    public FirebaseInterpretatorTest() {
+    @BeforeClass
+    public static void initialize() {
         mInterpretator = new FirebaseInterpretator(
                 InstrumentationRegistry.getTargetContext());
     }
@@ -395,6 +397,7 @@ public class FirebaseInterpretatorTest {
             }
         });
         mInterpretator.removeItem(TEST_ITEM);
+        waitAWhile();
         try {
             if (mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("onItemDeleted was called without deletion");
@@ -402,7 +405,6 @@ public class FirebaseInterpretatorTest {
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }
-        waitAWhile();
         List<String> itemList = mInterpretator.getAllItems().stream()
                 .map(item -> item.getItemName()).collect(Collectors.toList());
         assertThat(itemList.size(), is(0));
