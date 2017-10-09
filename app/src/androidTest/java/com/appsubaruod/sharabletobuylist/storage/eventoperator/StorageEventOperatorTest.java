@@ -5,6 +5,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -21,13 +22,21 @@ import static org.junit.Assert.fail;
  */
 @RunWith(AndroidJUnit4.class)
 public class StorageEventOperatorTest {
-    StorageEventOperator mOperator;
+    public static final int TIMEOUT = 5000;
+    static StorageEventOperator mOperator;
     CountDownLatch mLatch;
+    public static final int WAIT_MILLIS = 500;
+
+
+    @BeforeClass
+    public static void initialize() {
+        mOperator = new StorageEventOperator(InstrumentationRegistry.getTargetContext());
+    }
 
     @Before
     public void setUp() {
-        mOperator = new StorageEventOperator(InstrumentationRegistry.getTargetContext());
         mOperator.removeAllItems();
+        waitAWhile();
         mLatch = new CountDownLatch(1);
     }
 
@@ -38,13 +47,14 @@ public class StorageEventOperatorTest {
     @Test
     public void addAndGetItem() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(1));
             assertThat(itemList.get(0).getItemName(), equalTo("hoge"));
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("add timeout");
             }
         } catch (InterruptedException e) {
@@ -59,7 +69,7 @@ public class StorageEventOperatorTest {
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -70,13 +80,15 @@ public class StorageEventOperatorTest {
     @Test
     public void removeItem() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.removeItem("hoge");
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(0));
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -87,12 +99,13 @@ public class StorageEventOperatorTest {
     @Test
     public void removeAllItemsWithEmptyDb() {
         mOperator.removeAllItems();
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(0));
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -103,14 +116,17 @@ public class StorageEventOperatorTest {
     @Test
     public void removeAllItems() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.addItem("fuga");
+        waitAWhile();
         mOperator.removeAllItems();
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(0));
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -121,14 +137,16 @@ public class StorageEventOperatorTest {
     @Test
     public void completeItem() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.setItemCompleted("hoge", true);
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(1));
             assertThat(itemList.get(0).isBought(), is(true));
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
         } catch (InterruptedException e) {
@@ -139,17 +157,28 @@ public class StorageEventOperatorTest {
     @Test
     public void addCompletedItem() {
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.setItemCompleted("hoge", true);
+        waitAWhile();
         mOperator.addItem("hoge");
+        waitAWhile();
         mOperator.getItemsAsync((itemList) -> {
             assertThat(itemList.size(), is(1));
             assertThat(itemList.get(0).isBought(), is(false));
             mLatch.countDown();
         });
         try {
-            if (!mLatch.await(1000, TimeUnit.MILLISECONDS)) {
+            if (!mLatch.await(TIMEOUT, TimeUnit.MILLISECONDS)) {
                 fail("timeout");
             }
+        } catch (InterruptedException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    private void waitAWhile() {
+        try {
+            Thread.sleep(WAIT_MILLIS);
         } catch (InterruptedException e) {
             fail(e.getMessage());
         }

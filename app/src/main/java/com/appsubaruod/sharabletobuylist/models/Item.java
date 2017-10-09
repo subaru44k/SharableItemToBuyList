@@ -1,5 +1,7 @@
 package com.appsubaruod.sharabletobuylist.models;
 
+import android.support.annotation.Nullable;
+
 /**
  * Created by s-yamada on 2017/07/21.
  */
@@ -13,6 +15,11 @@ public class Item {
         mIsBought = isBought;
     }
 
+    public Item(String itemName, String isBought) {
+        mItemName = itemName;
+        mIsBought = "true".equals(isBought) ? true : false;
+    }
+
     public String getItemName() {
         return mItemName;
     }
@@ -23,5 +30,27 @@ public class Item {
 
     public void setBought(boolean bought) {
         mIsBought = bought;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof Item)) {
+            return false;
+        }
+        if (this.mItemName.equals(((Item) obj).getItemName())
+                && this.mIsBought == ((Item) obj).isBought()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        // addition below can overflow, but the result still meets contracts of hashCode().
+        // equal object produces same hash code even if it overflows.
+        return mItemName.hashCode() + (new Boolean(mIsBought)).hashCode();
     }
 }
