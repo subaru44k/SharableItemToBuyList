@@ -9,7 +9,8 @@ import com.google.firebase.database.FirebaseDatabase;
 public class FirebasePersistentDatabase {
     private static FirebaseDatabase mInstance;
 
-    private FirebasePersistentDatabase() {}
+    private FirebasePersistentDatabase() {
+    }
 
     public static synchronized FirebaseDatabase getInstance() {
         if (mInstance == null) {

@@ -9,7 +9,13 @@ import android.view.ViewGroup;
 
 import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.databinding.FragmentInputBoxBinding;
+import com.appsubaruod.sharabletobuylist.util.messages.CloseFloatingActionMenuEvent;
 import com.appsubaruod.sharabletobuylist.viewmodels.InputBoxViewModel;
+import com.github.clans.fab.FloatingActionMenu;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +47,17 @@ public class InputBoxFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +68,14 @@ public class InputBoxFragment extends Fragment {
         InputBoxViewModel model = new InputBoxViewModel(getActivity());
         binding.setInputItem(model);
 
+
         return binding.getRoot();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void closeFloatingActionMenu(CloseFloatingActionMenuEvent event) {
+        FloatingActionMenu fam = (FloatingActionMenu) getActivity().findViewById(R.id.floatingActionMenu);
+        fam.close(true);
     }
 
 }

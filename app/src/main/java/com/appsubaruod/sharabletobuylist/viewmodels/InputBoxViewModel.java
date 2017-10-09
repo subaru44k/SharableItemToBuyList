@@ -36,6 +36,7 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
 
     /**
      * Called when InputBox is selected.
+     *
      * @param view inputbox
      */
     public void onClick(View view) {
@@ -43,7 +44,11 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
     }
 
     public void onClickModifyItemButton(View view) {
-        mModel.modifyItem(getInputText());;
+        mModel.modifyItem(getInputText());
+    }
+
+    public void onClickAddItemButton(View view) {
+        mModel.addItem(getInputText());
     }
 
     @Override

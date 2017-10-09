@@ -6,7 +6,9 @@ package com.appsubaruod.sharabletobuylist.storage.firebase;
 
 public class FirebaseItem {
     private String mItemName;
-    /** Handle mIsBought with String to write to firebase consistently */
+    /**
+     * Handle mIsBought with String to write to firebase consistently
+     */
     private String mIsBought;
 
     public FirebaseItem(String itenName, boolean isBought) {

@@ -21,7 +21,8 @@ import javax.inject.Inject;
 public class StorageEventOperator {
     private Context mContext;
 
-    @Inject StorageInterpretator mInterpretator;
+    @Inject
+    StorageInterpretator mInterpretator;
 
     public StorageEventOperator(Context context) {
         mContext = context;
@@ -52,7 +53,7 @@ public class StorageEventOperator {
 
     public void removeItem(String itemToRemove) {
         getDatabaseExecutor().submit(() -> {
-           mInterpretator.removeItem(itemToRemove);
+            mInterpretator.removeItem(itemToRemove);
         });
     }
 
@@ -64,7 +65,7 @@ public class StorageEventOperator {
 
     public void setItemCompleted(String itemName, boolean isCompleted) {
         getDatabaseExecutor().submit(() -> {
-           mInterpretator.setCompleted(itemName, isCompleted);
+            mInterpretator.setCompleted(itemName, isCompleted);
         });
     }
 

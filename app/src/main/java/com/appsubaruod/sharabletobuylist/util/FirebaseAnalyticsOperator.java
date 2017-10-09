@@ -11,7 +11,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 public class FirebaseAnalyticsOperator {
     private static FirebaseAnalytics mInstance;
 
-    private FirebaseAnalyticsOperator() {}
+    private FirebaseAnalyticsOperator() {
+    }
 
     public static synchronized FirebaseAnalytics getInstance(Context context) {
         if (mInstance == null) {
