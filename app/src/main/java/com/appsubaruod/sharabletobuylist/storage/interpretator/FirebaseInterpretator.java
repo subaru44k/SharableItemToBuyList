@@ -2,7 +2,7 @@ package com.appsubaruod.sharabletobuylist.storage.interpretator;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.WorkerThread;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.models.Item;
@@ -13,8 +13,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
@@ -38,104 +36,131 @@ import java.util.stream.Collectors;
 public class FirebaseInterpretator implements StorageInterpretator {
     private final Object mLock = new Object();
     private static final String LOG_TAG = FirebaseInterpretator.class.getName();
-    public static final String ITEM_OBJECT = "itemObject";
-    public static final String UNIQUE_KEY_MAP = "uniqueKeyMap";
+    private static final String ITEM_OBJECT_PATH = "itemObject";
+    private static final String UNIQUE_KEY_PATH = "uniqueKeyMap";
+
+    private String mRootPath = "";
+    private String mItemObjectPath = ITEM_OBJECT_PATH;
+    private String mUniqueKeyPath = UNIQUE_KEY_PATH;
 
     private final FirebaseDatabase mFirebaseDatabase;
     private Set<StorageEvent> mEventListeners = new CopyOnWriteArraySet<>();
     private List<Item> mItemList = new ArrayList<>();
     private Map<String, String> mKeyMap = new HashMap<>();
     private CountDownLatch mItemObtainedLatch = new CountDownLatch(1);
+    private ValueEventListener mValueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            synchronized (mLock) {
+                Log.d(LOG_TAG, "ValueEventListener.onDataChanged");
+                HashMap<String, HashMap<String, Object>> map = ((HashMap) dataSnapshot.getValue());
 
-    public FirebaseInterpretator(Context context) {
+                HashMap<String, HashMap<String, String>> itemMap;
+                HashMap<String, String> keyMap;
+
+                if (map == null) {
+                    itemMap = new HashMap<>();
+                    keyMap = new HashMap<>();
+                } else {
+                    itemMap = (HashMap) map.get(ITEM_OBJECT_PATH);
+                    if (itemMap == null) {
+                        itemMap = new HashMap<>();
+                    }
+                    keyMap = (HashMap) map.get(UNIQUE_KEY_PATH);
+                    if (keyMap == null) {
+                        keyMap = new HashMap<>();
+                    }
+                }
+
+                HashMap<String, HashMap<String, String>> finalItemMap = itemMap;
+                CompletableFuture<Void> itemListUpdateFuture =
+                        CompletableFuture.supplyAsync(() -> finalItemMap)
+                                .thenAcceptAsync(itemUpdate);
+
+                HashMap<String, String> finalKeyMap = keyMap;
+                CompletableFuture<Void> keyUpdateFuture =
+                        CompletableFuture.supplyAsync(() -> finalKeyMap)
+                                .thenAcceptAsync(keyUpdate);
+
+                itemListUpdateFuture.runAfterBoth(keyUpdateFuture, () -> {
+                    // count down to invoke waiting thread.
+                    // note couldDown() do nothing if could is already 0.
+                    mItemObtainedLatch.countDown();
+                });
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+
+        private Consumer<HashMap<String, HashMap<String, String>>> itemUpdate = (itemMap -> {
+            List<Item> itemList = new CopyOnWriteArrayList<>();
+
+            itemMap.forEach((uniqueId, itemValueMap) -> {
+                final String[] itemName = new String[1];
+                final String[] isBought = new String[1];
+                itemValueMap.forEach((key, value) -> {
+                    Log.d(LOG_TAG, key + ", " + value);
+                    if ("itemName".equals(key)) {
+                        itemName[0] = value;
+                    } else {
+                        isBought[0] = value;
+                    }
+                });
+                itemList.add(0, new Item(itemName[0], isBought[0]));
+            });
+
+            // onDataChanged is also called when firstly ValueEventListener is added
+            // It should be handled as initialization and does not notify to the listener
+            if (mItemObtainedLatch.getCount() == 0) {
+                notifyItemDeleted(mItemList, itemList);
+                notifyItemAdded(mItemList, itemList);
+                notifyItemCompleted(mItemList, itemList);
+            }
+
+            mItemList = itemList;
+        });
+
+        private Consumer<HashMap<String, String>> keyUpdate = (keyMap -> {
+            mKeyMap = keyMap;
+        });
+    };
+
+    public FirebaseInterpretator(Context context, @Nullable String rootPath) {
         mFirebaseDatabase = FirebasePersistentDatabase.getInstance();
+
+        if (rootPath == null || "".equals(rootPath)) {
+            changeDatabasePath("DEFAULT_PATH");
+        } else {
+            changeDatabasePath(rootPath);
+        }
 
         // do not store context
         startMonitoringItemChange();
     }
 
+    public void changeRootPath(String rootPath) {
+        stopMonitoringItemChange();
+        changeDatabasePath(rootPath);
+        startMonitoringItemChange();
+    }
+
+    private void changeDatabasePath(String rootPath) {
+        mRootPath = rootPath;
+        mItemObjectPath = rootPath + "/" + ITEM_OBJECT_PATH;
+        mUniqueKeyPath = rootPath + "/" + UNIQUE_KEY_PATH;
+    }
+
     private void startMonitoringItemChange() {
         DatabaseReference reference = getRootReference();
-        reference.addValueEventListener(new ValueEventListener() {
+        reference.addValueEventListener(mValueEventListener);
+    }
 
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                synchronized (mLock) {
-                    Log.d(LOG_TAG, "ValueEventListener.onDataChanged");
-                    HashMap<String, HashMap<String, Object>> map = ((HashMap) dataSnapshot.getValue());
-
-                    HashMap<String, HashMap<String, String>> itemMap;
-                    HashMap<String, String> keyMap;
-
-                    if (map == null) {
-                        itemMap = new HashMap<>();
-                        keyMap = new HashMap<>();
-                    } else {
-                        itemMap = (HashMap) map.get(ITEM_OBJECT);
-                        if (itemMap == null) {
-                            itemMap = new HashMap<>();
-                        }
-                        keyMap = (HashMap) map.get(UNIQUE_KEY_MAP);
-                        if (keyMap == null) {
-                            keyMap = new HashMap<>();
-                        }
-                    }
-
-                    HashMap<String, HashMap<String, String>> finalItemMap = itemMap;
-                    CompletableFuture<Void> itemListUpdateFuture =
-                            CompletableFuture.supplyAsync(() -> finalItemMap)
-                                    .thenAcceptAsync(itemUpdate);
-
-                    HashMap<String, String> finalKeyMap = keyMap;
-                    CompletableFuture<Void> keyUpdateFuture =
-                            CompletableFuture.supplyAsync(() -> finalKeyMap)
-                                    .thenAcceptAsync(keyUpdate);
-
-                    itemListUpdateFuture.runAfterBoth(keyUpdateFuture, () -> {
-                        // count down to invoke waiting thread.
-                        // note couldDown() do nothing if could is already 0.
-                        mItemObtainedLatch.countDown();
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-
-            private Consumer<HashMap<String, HashMap<String, String>>> itemUpdate = (itemMap -> {
-                List<Item> itemList = new CopyOnWriteArrayList<>();
-
-                itemMap.forEach((uniqueId, itemValueMap) -> {
-                    final String[] itemName = new String[1];
-                    final String[] isBought = new String[1];
-                    itemValueMap.forEach((key, value) -> {
-                        Log.d(LOG_TAG, key + ", " + value);
-                        if ("itemName".equals(key)) {
-                            itemName[0] = value;
-                        } else {
-                            isBought[0] = value;
-                        }
-                    });
-                    itemList.add(0, new Item(itemName[0], isBought[0]));
-                });
-
-                // onDataChanged is also called when firstly ValueEventListener is added
-                // It should be handled as initialization and does not notify to the listener
-                if (mItemObtainedLatch.getCount() == 0) {
-                    notifyItemDeleted(mItemList, itemList);
-                    notifyItemAdded(mItemList, itemList);
-                    notifyItemCompleted(mItemList, itemList);
-                }
-
-                mItemList = itemList;
-            });
-
-            private Consumer<HashMap<String, String>> keyUpdate = (keyMap -> {
-                mKeyMap = keyMap;
-            });
-        });
+    private void stopMonitoringItemChange() {
+        DatabaseReference reference = getRootReference();
+        reference.removeEventListener(mValueEventListener);
     }
 
     private void notifyItemCompleted(@NonNull List<Item> oldItemList, @NonNull List<Item> newItemList) {
@@ -209,13 +234,13 @@ public class FirebaseInterpretator implements StorageInterpretator {
             String itemObjectPath =
                     (new StringBuilder())
                             .append("/")
-                            .append(ITEM_OBJECT)
+                            .append(ITEM_OBJECT_PATH)
                             .append("/")
                             .toString();
             String uniqueKeyMapPath =
                     (new StringBuilder())
                             .append("/")
-                            .append(UNIQUE_KEY_MAP)
+                            .append(UNIQUE_KEY_PATH)
                             .append("/")
                             .toString();
             childUpdates.put(itemObjectPath + key + "/bought", "false");
@@ -227,15 +252,15 @@ public class FirebaseInterpretator implements StorageInterpretator {
     }
 
     private DatabaseReference getRootReference() {
-        return mFirebaseDatabase.getReference();
+        return mFirebaseDatabase.getReference(mRootPath);
     }
 
     private DatabaseReference getDataReference() {
-        return mFirebaseDatabase.getReference(ITEM_OBJECT);
+        return mFirebaseDatabase.getReference(mItemObjectPath);
     }
 
     private DatabaseReference getKeyMapReference() {
-        return mFirebaseDatabase.getReference(UNIQUE_KEY_MAP);
+        return mFirebaseDatabase.getReference(mUniqueKeyPath);
     }
 
     @Override
@@ -252,13 +277,13 @@ public class FirebaseInterpretator implements StorageInterpretator {
             String itemObjectPath =
                     (new StringBuilder())
                             .append("/")
-                            .append(ITEM_OBJECT)
+                            .append(ITEM_OBJECT_PATH)
                             .append("/")
                             .toString();
             String uniqueKeyMapPath =
                     (new StringBuilder())
                             .append("/")
-                            .append(UNIQUE_KEY_MAP)
+                            .append(UNIQUE_KEY_PATH)
                             .append("/")
                             .toString();
             childRemoval.put(itemObjectPath + key + "/bought", null);

@@ -47,7 +47,8 @@ public class FirebaseInterpretatorTest {
     @BeforeClass
     public static void initialize() {
         mInterpretator = new FirebaseInterpretator(
-                InstrumentationRegistry.getTargetContext());
+                InstrumentationRegistry.getTargetContext(),
+                "UnitTest");
     }
 
     @Before
