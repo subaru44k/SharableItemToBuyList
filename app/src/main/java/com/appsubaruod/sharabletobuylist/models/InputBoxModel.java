@@ -7,8 +7,8 @@ import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
+import com.appsubaruod.sharabletobuylist.util.messages.CloseFloatingActionMenuEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -62,6 +62,7 @@ public class InputBoxModel {
 
     /**
      * Sets text in the text box.
+     *
      * @param text new text set to the box
      */
     public void setTextBoxString(String text) {
@@ -70,8 +71,26 @@ public class InputBoxModel {
     }
 
     /**
+     * Add item and reflect to db.
+     *
+     * @param itemName name of the new item
+     */
+    public void addItem(String itemName) {
+        if (mTextBoxString.equals(itemName)) {
+            toggleInputBox();
+            return;
+        }
+        Log.d(LOG_TAG, "Add text : " + mTextBoxString + " -> " + itemName);
+        mSharableItemListModel.addItem(itemName);
+        toggleInputBox();
+
+        sendAddEventLog(itemName);
+    }
+
+    /**
      * Modifies item and reflect to db.
-     * @param itemName name of the item
+     *
+     * @param itemName name of the new item
      */
     public void modifyItem(String itemName) {
         if (mTextBoxString.equals(itemName)) {
@@ -83,6 +102,13 @@ public class InputBoxModel {
         toggleInputBox();
 
         sendModifyEventLog(itemName);
+    }
+
+    private void sendAddEventLog(String itemName) {
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalyticsOperator.Param.NEW_ITEM_NAME, itemName);
+        FirebaseAnalyticsOperator.getInstanceIfCreated()
+                .logEvent(FirebaseAnalyticsOperator.Event.ADD_CONTENT, bundle);
     }
 
     private void sendModifyEventLog(String itemName) {
@@ -116,6 +142,7 @@ public class InputBoxModel {
             case BottomSheetBehavior.STATE_EXPANDED:
                 mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
+                EventBus.getDefault().post(new CloseFloatingActionMenuEvent());
                 setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
                 break;
             default:

@@ -15,6 +15,7 @@ import org.greenrobot.eventbus.EventBus;
 
 public class StorageEventObserver implements StorageInterpretator.StorageEvent {
     private static final String LOG_TAG = StorageEventObserver.class.getName();
+
     @Override
     public void onItemAdded(String itemAdded) {
         Log.d(LOG_TAG, "Item added : " + itemAdded);

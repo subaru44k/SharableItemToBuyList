@@ -10,15 +10,22 @@ import java.util.List;
  */
 public interface StorageInterpretator {
     void add(String itemToAdd);
+
     void removeItem(String itemToDelete);
+
     void removeAllItems();
+
     List<Item> getAllItems();
+
     void setCompleted(String itemToSetCompleted, boolean isCompleted);
+
     void registerStorageEventListener(StorageEvent listener);
 
     interface StorageEvent {
         void onItemAdded(String itemAdded);
+
         void onItemCompleted(String itemCompleted, boolean isCompleted);
+
         void onItemDeleted(String itemDeleted);
     }
 }
