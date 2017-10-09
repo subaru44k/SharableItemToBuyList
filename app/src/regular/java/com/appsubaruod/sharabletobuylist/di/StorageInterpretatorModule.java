@@ -22,6 +22,6 @@ public class StorageInterpretatorModule {
 
     @Provides
     public StorageInterpretator provideStorageInterpretator() {
-        return new FirebaseInterpretator(mContext);
+        return new FirebaseInterpretator(mContext, "");
     }
 }

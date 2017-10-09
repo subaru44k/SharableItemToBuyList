@@ -74,6 +74,10 @@ public class InputBoxModel {
      * @param itemName name of the item
      */
     public void modifyItem(String itemName) {
+        if (mTextBoxString.equals(itemName)) {
+            toggleInputBox();
+            return;
+        }
         Log.d(LOG_TAG, "Modify text : " + mTextBoxString + " -> " + itemName);
         mSharableItemListModel.modifyItem(mTextBoxString, itemName);
         toggleInputBox();
