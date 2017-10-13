@@ -120,6 +120,24 @@ public class InputBoxModel {
     }
 
     /**
+     * Called when InputBox is clicked.
+     */
+    public void onClick() {
+        if (isInputBoxCollapsed()) {
+            setTextBoxString("");
+        }
+        expandInputBox();
+    }
+
+    private boolean isInputBoxExpanded() {
+        return mExpansionState == BottomSheetBehavior.STATE_EXPANDED;
+    }
+
+    private boolean isInputBoxCollapsed() {
+        return mExpansionState == BottomSheetBehavior.STATE_COLLAPSED;
+    }
+
+    /**
      * Controls InputBox and editable state of input box.
      */
     public void expandInputBox() {

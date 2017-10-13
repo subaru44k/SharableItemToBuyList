@@ -40,7 +40,7 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
      * @param view inputbox
      */
     public void onClick(View view) {
-        mModel.expandInputBox();
+        mModel.onClick();
     }
 
     public void onClickModifyItemButton(View view) {
