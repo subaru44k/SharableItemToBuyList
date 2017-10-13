@@ -38,7 +38,7 @@ public class InputBoxModel {
         mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
     }
 
-    public static InputBoxModel getInstance(Context context) {
+    public static synchronized InputBoxModel getInstance(Context context) {
         if (mInputBoxModel == null) {
             mInputBoxModel = new InputBoxModel(context);
         }

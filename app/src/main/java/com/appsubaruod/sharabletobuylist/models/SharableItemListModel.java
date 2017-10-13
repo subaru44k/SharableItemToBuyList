@@ -14,7 +14,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -27,6 +29,7 @@ public class SharableItemListModel {
     private StorageEventOperator mStorageEventOperator;
     private static SharableItemListModel mModel;
     private List<Item> mItemList = new CopyOnWriteArrayList<>();
+    private Set<BackgroundColorChangeListener> mBackgroundColorChangeListenerSet = new HashSet<>();
 
     private SharableItemListModel(Context context) {
         mContext = context;
@@ -35,13 +38,14 @@ public class SharableItemListModel {
             // Reverse list to show newer items to the top
             Collections.reverse(itemList);
             mItemList = itemList;
+            clarBackgroundColorChangeListenerSet();
             notifyListItemChanged();
         });
 
         EventBus.getDefault().register(this);
     }
 
-    public static SharableItemListModel getInstance(Context context) {
+    public static synchronized SharableItemListModel getInstance(Context context) {
         if (mModel == null) {
             mModel = new SharableItemListModel(context);
         }
@@ -79,6 +83,7 @@ public class SharableItemListModel {
     public void onItemAdded(ItemAddedEvent event) {
         Log.d(LOG_TAG, "Receive item added : " + event.getItemName());
         mItemList.add(0, new Item(event.getItemName(), false));
+        clarBackgroundColorChangeListenerSet();
         notifyListItemChanged();
     }
 
@@ -87,6 +92,7 @@ public class SharableItemListModel {
         Log.d(LOG_TAG, "Receive item completed : " + event.getItemName() + ", " + event.isCompleted());
         mItemList.remove(getIndexOfTheItem(event.getItemName()));
         mItemList.add(0, new Item(event.getItemName(), event.isCompleted()));
+        clarBackgroundColorChangeListenerSet();
         notifyListItemChanged();
     }
 
@@ -104,11 +110,28 @@ public class SharableItemListModel {
     public void onItemDeleted(ItemDeletedEvent event) {
         Log.d(LOG_TAG, "Receive item deleted : " + event.getItemName());
         mItemList.remove(getIndexOfTheItem(event.getItemName()));
+        clarBackgroundColorChangeListenerSet();
         notifyListItemChanged();
     }
 
     private void notifyListItemChanged() {
         EventBus.getDefault().postSticky(new ListItemChangedEvent());
+    }
+
+    public void registerSharableItemModel(BackgroundColorChangeListener listener) {
+        mBackgroundColorChangeListenerSet.add(listener);
+    }
+
+    private void clarBackgroundColorChangeListenerSet() {
+        mBackgroundColorChangeListenerSet.clear();
+    }
+
+    public void changeBackgroundColor(int color) {
+        mBackgroundColorChangeListenerSet.forEach(item -> item.onBackgroundColorChanged(color));
+    }
+
+    interface BackgroundColorChangeListener {
+        void onBackgroundColorChanged(int color);
     }
 
 }
