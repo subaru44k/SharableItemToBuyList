@@ -3,7 +3,10 @@ package com.appsubaruod.sharabletobuylist.models;
 import android.os.Bundle;
 
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
+import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by s-yamada on 2017/08/08.
@@ -25,13 +28,20 @@ public class SharableItemModel {
     }
 
     /**
-     * Called when one of sharable item is selected.
+     * Called when one of sharable item is clicked.
      */
-    public void onItemSelected() {
+    public void onItemClicked() {
         mInputBoxModel.expandInputBox();
         mInputBoxModel.setTextBoxString(mSharableItemListModel.getText(mIndex));
 
         sendItemSelectedEventLog();
+    }
+
+    /**
+     * Called when one of sharable item is selected.
+     */
+    public void onItemSelected() {
+        EventBus.getDefault().post(new StartActionModeEvent());
     }
 
     private void sendItemSelectedEventLog() {

@@ -39,7 +39,12 @@ public class SharableItemViewModel extends BaseObservable {
     }
 
     public void onClick(View view) {
+        mSharableItemModel.onItemClicked();
+    }
+
+    public boolean onLongClick(View view) {
         mSharableItemModel.onItemSelected();
+        return true;
     }
 
 }

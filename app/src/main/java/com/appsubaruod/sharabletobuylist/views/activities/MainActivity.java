@@ -8,10 +8,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +23,7 @@ import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -107,6 +110,31 @@ public class MainActivity extends AppCompatActivity
 
             transaction.commit();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void startActionMode(StartActionModeEvent event) {
+        this.startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+
+            }
+        });
     }
 
     @Override
