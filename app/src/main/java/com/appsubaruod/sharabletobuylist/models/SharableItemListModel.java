@@ -63,16 +63,16 @@ public class SharableItemListModel {
         return mModel;
     }
 
-    public void addItem(String itemName) {
+    void addItem(String itemName) {
         mStorageEventOperator.addItem(itemName);
     }
 
-    public void modifyItem(String oldItemName, String newItemName) {
+    void modifyItem(String oldItemName, String newItemName) {
         mStorageEventOperator.removeItem(oldItemName);
         mStorageEventOperator.addItem(newItemName);
     }
 
-    public String getText(int index) {
+    String getText(int index) {
         if (index > mItemList.size() - 1) {
             return "Larger than the list size";
         }

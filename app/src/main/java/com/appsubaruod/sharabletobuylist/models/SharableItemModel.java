@@ -43,7 +43,7 @@ public class SharableItemModel
             mInputBoxModel.setTextBoxString(mSharableItemListModel.getText(mIndex));
             changeToDefaultColor();
 
-            sendItemSelectedEventLog();
+            sendItemClickedEventLog();
         } else {
             if (mIsItemSelected) {
                 changeToDefaultColor();
@@ -83,7 +83,7 @@ public class SharableItemModel
         }
     }
 
-    private void sendItemSelectedEventLog() {
+    private void sendItemClickedEventLog() {
         Bundle bundle = new Bundle();
         bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, getText());
         FirebaseAnalyticsOperator.getInstanceIfCreated()
