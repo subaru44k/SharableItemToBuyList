@@ -36,4 +36,8 @@ public class ModelManipulator {
     public void toggleInputBox() {
         getInputBoxModel().toggleInputBox();
     }
+
+    public void setActionMode(boolean isActionMode) {
+        getSharableItemListModel().setActionMode(isActionMode);
+    }
 }

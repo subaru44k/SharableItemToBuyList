@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
                 actionMode.getMenuInflater().inflate(R.menu.item_selected_menu, menu);
+                mModelManipulator.setActionMode(true);
                 return true;
             }
 
@@ -146,6 +147,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDestroyActionMode(ActionMode actionMode) {
                 mModelManipulator.changeToDefaultBackgroundColor();
+                mModelManipulator.setActionMode(false);
             }
         });
     }
