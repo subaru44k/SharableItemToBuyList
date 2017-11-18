@@ -133,9 +133,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case R.id.item_delete:
-                        break;
-                    case R.id.item_done:
+                    case R.id.item_archive:
                         break;
                     default:
                         Log.w(LOG_TAG, "Unsupported item is clicked on ActionMode");

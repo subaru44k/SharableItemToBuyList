@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/item_done"
-        android:icon="@drawable/ic_action_create"
-        android:title="done" />
-    <item
-        android:id="@+id/item_delete"
-        android:icon="@drawable/ic_menu_gallery"
-        android:title="delete" />
+        android:id="@+id/item_archive"
+        android:icon="@drawable/ic_action_archive"
+        android:title="archive" />
 </menu>
