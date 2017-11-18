@@ -29,7 +29,7 @@
             android:layout_marginStart="24dp"
             android:layout_marginTop="0dp"
             android:gravity="top"
-            android:onClick="@{inputItem.onClick}"
+            android:onClick="@{inputItem::onClick}"
             android:text="@={inputItem.inputText}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintBottom_toBottomOf="parent"

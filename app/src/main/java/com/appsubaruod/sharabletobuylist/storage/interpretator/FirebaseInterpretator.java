@@ -317,7 +317,7 @@ public class FirebaseInterpretator implements StorageInterpretator {
             if (!mKeyMap.containsKey(itemToSetCompleted)) {
                 return;
             }
-            if (mKeyMap.get(itemToSetCompleted).equals(isCompleted)) {
+            if (Boolean.valueOf(mKeyMap.get(itemToSetCompleted)).equals(isCompleted)) {
                 return;
             }
 

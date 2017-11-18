@@ -9,6 +9,8 @@ import java.util.List;
  * Interprets intuitive item operation to the actual storage operations.
  */
 public interface StorageInterpretator {
+    void changeRootPath(String rootPath);
+
     void add(String itemToAdd);
 
     void removeItem(String itemToDelete);

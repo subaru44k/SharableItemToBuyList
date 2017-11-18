@@ -31,6 +31,7 @@ public class StorageEventOperatorTest {
     @BeforeClass
     public static void initialize() {
         mOperator = new StorageEventOperator(InstrumentationRegistry.getTargetContext());
+        mOperator.changeRootPathForTesting();
     }
 
     @Before

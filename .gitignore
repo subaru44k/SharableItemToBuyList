@@ -21,6 +21,7 @@ proguard/
 *.iws
 app/build/
 app/google-services.json
+ClassDiagram.asta
 
 .idea/*.xml
 
