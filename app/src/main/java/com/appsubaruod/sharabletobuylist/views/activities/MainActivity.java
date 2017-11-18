@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,8 +20,10 @@ import android.widget.RelativeLayout;
 
 import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
+import com.appsubaruod.sharabletobuylist.models.ModelManipulator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity
 
     private final String LOG_TAG = MainActivity.class.getName();
     private BottomSheetBehavior mBottomSheetBehavior;
+    private ModelManipulator mModelManipulator;
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
@@ -107,6 +111,45 @@ public class MainActivity extends AppCompatActivity
 
             transaction.commit();
         }
+
+        mModelManipulator = new ModelManipulator();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void startActionMode(StartActionModeEvent event) {
+        this.startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                actionMode.getMenuInflater().inflate(R.menu.item_selected_menu, menu);
+                mModelManipulator.setActionMode(true);
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.item_archive:
+                        mModelManipulator.archiveSelectedItems();
+                        actionMode.finish();
+                        break;
+                    default:
+                        Log.w(LOG_TAG, "Unsupported item is clicked on ActionMode");
+                        break;
+                }
+                return true;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+                mModelManipulator.changeToDefaultBackgroundColor();
+                mModelManipulator.setActionMode(false);
+            }
+        });
     }
 
     @Override
@@ -126,8 +169,8 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (InputBoxModel.getInstanceIfCreated().getCurrentExpansionState() == BottomSheetBehavior.STATE_EXPANDED) {
-            InputBoxModel.getInstanceIfCreated().toggleInputBox();
+        } else if (mModelManipulator.getInputBoxExpantionState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mModelManipulator.toggleInputBox();
         } else {
             super.onBackPressed();
         }

@@ -3,7 +3,9 @@ package com.appsubaruod.sharabletobuylist.models;
 import android.content.Context;
 import android.util.Log;
 
+import com.appsubaruod.sharabletobuylist.state.ActionModeState;
 import com.appsubaruod.sharabletobuylist.storage.eventoperator.StorageEventOperator;
+import com.appsubaruod.sharabletobuylist.util.FirebaseEventReporter;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemCompletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemDeletedEvent;
@@ -14,7 +16,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -27,6 +31,9 @@ public class SharableItemListModel {
     private StorageEventOperator mStorageEventOperator;
     private static SharableItemListModel mModel;
     private List<Item> mItemList = new CopyOnWriteArrayList<>();
+    private Set<SharableItemModel> mSelectedItemModelSet = new HashSet<>();
+    private Set<BackgroundColorChangedListener> mBackgroundColorChangedListeners = new HashSet<>();
+    private ActionModeState mActionModeState;
 
     private SharableItemListModel(Context context) {
         mContext = context;
@@ -35,13 +42,16 @@ public class SharableItemListModel {
             // Reverse list to show newer items to the top
             Collections.reverse(itemList);
             mItemList = itemList;
+            clearBackgroundColorChangeListenerSet();
+            clearActionModeStateListener();
             notifyListItemChanged();
         });
+        mActionModeState = new ActionModeState();
 
         EventBus.getDefault().register(this);
     }
 
-    public static SharableItemListModel getInstance(Context context) {
+    public static synchronized SharableItemListModel getInstance(Context context) {
         if (mModel == null) {
             mModel = new SharableItemListModel(context);
         }
@@ -55,16 +65,35 @@ public class SharableItemListModel {
         return mModel;
     }
 
-    public void addItem(String itemName) {
+    void addItem(String itemName) {
         mStorageEventOperator.addItem(itemName);
+        FirebaseEventReporter.getInstance().sendAddItemEventLog(itemName);
     }
 
-    public void modifyItem(String oldItemName, String newItemName) {
+    void modifyItem(String oldItemName, String newItemName) {
         mStorageEventOperator.removeItem(oldItemName);
         mStorageEventOperator.addItem(newItemName);
+        FirebaseEventReporter.getInstance().sendModifyItemEventLog(oldItemName, newItemName);
     }
 
-    public String getText(int index) {
+    void deleteItem(String itemName) {
+        mStorageEventOperator.removeItem(itemName);
+        FirebaseEventReporter.getInstance().sendDeleteItemEventLog(itemName);
+    }
+
+    void deleteSelectedItemsIfActionMode() {
+        if (mActionModeState.isActionMode()) {
+            collectSelectedItems().forEach(item -> deleteItem(item.getText()));
+        } else {
+            Log.w(LOG_TAG, "ignore items deletion, since ActionMode is not started.");
+        }
+    }
+
+    private Set<SharableItemModel> collectSelectedItems() {
+        return mSelectedItemModelSet;
+    }
+
+    String getText(int index) {
         if (index > mItemList.size() - 1) {
             return "Larger than the list size";
         }
@@ -79,6 +108,8 @@ public class SharableItemListModel {
     public void onItemAdded(ItemAddedEvent event) {
         Log.d(LOG_TAG, "Receive item added : " + event.getItemName());
         mItemList.add(0, new Item(event.getItemName(), false));
+        clearBackgroundColorChangeListenerSet();
+        clearActionModeStateListener();
         notifyListItemChanged();
     }
 
@@ -87,7 +118,21 @@ public class SharableItemListModel {
         Log.d(LOG_TAG, "Receive item completed : " + event.getItemName() + ", " + event.isCompleted());
         mItemList.remove(getIndexOfTheItem(event.getItemName()));
         mItemList.add(0, new Item(event.getItemName(), event.isCompleted()));
+        clearBackgroundColorChangeListenerSet();
+        clearActionModeStateListener();
         notifyListItemChanged();
+    }
+
+    void registerSelectedItem(SharableItemModel itemModel) {
+        mSelectedItemModelSet.add(itemModel);
+    }
+
+    void unregisterSelectedItem(SharableItemModel itemModel) {
+        mSelectedItemModelSet.remove(itemModel);
+    }
+
+    private void clearSelectedItemSet() {
+        mSelectedItemModelSet.clear();
     }
 
     private int getIndexOfTheItem(String itemName) {
@@ -104,6 +149,8 @@ public class SharableItemListModel {
     public void onItemDeleted(ItemDeletedEvent event) {
         Log.d(LOG_TAG, "Receive item deleted : " + event.getItemName());
         mItemList.remove(getIndexOfTheItem(event.getItemName()));
+        clearBackgroundColorChangeListenerSet();
+        clearActionModeStateListener();
         notifyListItemChanged();
     }
 
@@ -111,4 +158,41 @@ public class SharableItemListModel {
         EventBus.getDefault().postSticky(new ListItemChangedEvent());
     }
 
+    void registerBackgroundColorChangedListener(BackgroundColorChangedListener listener) {
+        mBackgroundColorChangedListeners.add(listener);
+    }
+
+    void registerActionModeChangedListener(ActionModeState.ActionModeChangedListener listener) {
+        mActionModeState.registerActionModeChangedListener(listener);
+    }
+
+    private void clearBackgroundColorChangeListenerSet() {
+        mBackgroundColorChangedListeners.clear();
+    }
+
+    private void clearActionModeStateListener() {
+        if (mActionModeState != null) {
+            mActionModeState.clearListener();
+        }
+    }
+
+    void changeBackgroundColor(int color) {
+        mBackgroundColorChangedListeners.forEach(item -> item.onBackgroundColorChanged(color));
+    }
+
+    boolean isActionMode() {
+        return mActionModeState.isActionMode();
+    }
+
+    void setActionMode(boolean isActionMode) {
+        mActionModeState.setActionMode(isActionMode);
+        // clear selected item set when ActionMode is finished
+        if (!isActionMode) {
+            clearSelectedItemSet();
+        }
+    }
+
+    interface BackgroundColorChangedListener {
+        void onBackgroundColorChanged(int color);
+    }
 }

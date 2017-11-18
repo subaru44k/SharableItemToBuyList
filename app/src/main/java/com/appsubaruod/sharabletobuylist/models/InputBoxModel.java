@@ -1,12 +1,10 @@
 package com.appsubaruod.sharabletobuylist.models;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.R;
-import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.messages.CloseFloatingActionMenuEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 
@@ -38,7 +36,7 @@ public class InputBoxModel {
         mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
     }
 
-    public static InputBoxModel getInstance(Context context) {
+    public static synchronized InputBoxModel getInstance(Context context) {
         if (mInputBoxModel == null) {
             mInputBoxModel = new InputBoxModel(context);
         }
@@ -83,8 +81,6 @@ public class InputBoxModel {
         Log.d(LOG_TAG, "Add text : " + mTextBoxString + " -> " + itemName);
         mSharableItemListModel.addItem(itemName);
         toggleInputBox();
-
-        sendAddEventLog(itemName);
     }
 
     /**
@@ -100,23 +96,6 @@ public class InputBoxModel {
         Log.d(LOG_TAG, "Modify text : " + mTextBoxString + " -> " + itemName);
         mSharableItemListModel.modifyItem(mTextBoxString, itemName);
         toggleInputBox();
-
-        sendModifyEventLog(itemName);
-    }
-
-    private void sendAddEventLog(String itemName) {
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalyticsOperator.Param.NEW_ITEM_NAME, itemName);
-        FirebaseAnalyticsOperator.getInstanceIfCreated()
-                .logEvent(FirebaseAnalyticsOperator.Event.ADD_CONTENT, bundle);
-    }
-
-    private void sendModifyEventLog(String itemName) {
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalyticsOperator.Param.OLD_ITEM_NAME, mTextBoxString);
-        bundle.putString(FirebaseAnalyticsOperator.Param.NEW_ITEM_NAME, itemName);
-        FirebaseAnalyticsOperator.getInstanceIfCreated()
-                .logEvent(FirebaseAnalyticsOperator.Event.MODIFY_CONTENT, bundle);
     }
 
     /**
