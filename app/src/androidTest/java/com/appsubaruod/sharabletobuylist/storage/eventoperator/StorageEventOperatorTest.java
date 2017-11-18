@@ -36,6 +36,7 @@ public class StorageEventOperatorTest {
 
     @Before
     public void setUp() {
+        waitAWhile();
         mOperator.removeAllItems();
         waitAWhile();
         mLatch = new CountDownLatch(1);
