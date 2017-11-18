@@ -83,8 +83,6 @@ public class InputBoxModel {
         Log.d(LOG_TAG, "Add text : " + mTextBoxString + " -> " + itemName);
         mSharableItemListModel.addItem(itemName);
         toggleInputBox();
-
-        sendAddEventLog(itemName);
     }
 
     /**
@@ -100,23 +98,6 @@ public class InputBoxModel {
         Log.d(LOG_TAG, "Modify text : " + mTextBoxString + " -> " + itemName);
         mSharableItemListModel.modifyItem(mTextBoxString, itemName);
         toggleInputBox();
-
-        sendModifyEventLog(itemName);
-    }
-
-    private void sendAddEventLog(String itemName) {
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalyticsOperator.Param.NEW_ITEM_NAME, itemName);
-        FirebaseAnalyticsOperator.getInstanceIfCreated()
-                .logEvent(FirebaseAnalyticsOperator.Event.ADD_CONTENT, bundle);
-    }
-
-    private void sendModifyEventLog(String itemName) {
-        Bundle bundle = new Bundle();
-        bundle.putString(FirebaseAnalyticsOperator.Param.OLD_ITEM_NAME, mTextBoxString);
-        bundle.putString(FirebaseAnalyticsOperator.Param.NEW_ITEM_NAME, itemName);
-        FirebaseAnalyticsOperator.getInstanceIfCreated()
-                .logEvent(FirebaseAnalyticsOperator.Event.MODIFY_CONTENT, bundle);
     }
 
     /**

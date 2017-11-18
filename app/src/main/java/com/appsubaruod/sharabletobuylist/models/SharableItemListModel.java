@@ -1,14 +1,18 @@
 package com.appsubaruod.sharabletobuylist.models;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.state.ActionModeState;
 import com.appsubaruod.sharabletobuylist.storage.eventoperator.StorageEventOperator;
+import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
+import com.appsubaruod.sharabletobuylist.util.FirebaseEventReporter;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemCompletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemDeletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ListItemChangedEvent;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -66,15 +70,18 @@ public class SharableItemListModel {
 
     void addItem(String itemName) {
         mStorageEventOperator.addItem(itemName);
+        FirebaseEventReporter.getInstance().sendAddItemEventLog(itemName);
     }
 
     void modifyItem(String oldItemName, String newItemName) {
         mStorageEventOperator.removeItem(oldItemName);
         mStorageEventOperator.addItem(newItemName);
+        FirebaseEventReporter.getInstance().sendModifyItemEventLog(oldItemName, newItemName);
     }
 
     void deleteItem(String itemName) {
         mStorageEventOperator.removeItem(itemName);
+        FirebaseEventReporter.getInstance().sendDeleteItemEventLog(itemName);
     }
 
     public void deleteSelectedItemsIfActionMode() {

@@ -21,20 +21,21 @@ public class FirebaseAnalyticsOperator {
         return mInstance;
     }
 
-    public static FirebaseAnalytics getInstanceIfCreated() {
+    static FirebaseAnalytics getInstanceIfCreated() {
         if (mInstance == null) {
             throw new IllegalStateException("getInstanceIfCreated() is called without calling getInstance(context).");
         }
         return mInstance;
     }
 
-    public class Param {
+    class Param {
         public static final String OLD_ITEM_NAME = "old_item_name";
         public static final String NEW_ITEM_NAME = "new_item_name";
     }
 
-    public class Event {
+    class Event {
         public static final String ADD_CONTENT = "add_content";
         public static final String MODIFY_CONTENT = "modify_content";
+        public static final String DELETE_CONTENT = "delete_content";
     }
 }
