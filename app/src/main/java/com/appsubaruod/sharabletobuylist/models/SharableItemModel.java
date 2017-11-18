@@ -45,13 +45,19 @@ public class SharableItemModel
 
             sendItemClickedEventLog();
         } else {
-            if (mIsItemSelected) {
+            if (isItemSelected()) {
                 changeToDefaultColor();
+                mSharableItemListModel.unregisterSelectedItem(this);
             } else {
                 changeToSelectedColor();
+                mSharableItemListModel.registerSelectedItem(this);
             }
             changeSelectedState();
         }
+    }
+
+    private boolean isItemSelected() {
+        return mIsItemSelected;
     }
 
     private void changeToSelectedColor() {
@@ -70,6 +76,7 @@ public class SharableItemModel
             EventBus.getDefault().post(new StartActionModeEvent());
             changeSelectedState();
             changeToSelectedColor();
+            mSharableItemListModel.registerSelectedItem(this);
         }
     }
 

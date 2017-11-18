@@ -25,6 +25,10 @@ public class ModelManipulator {
         return mInputBoxModel;
     }
 
+    public void archiveSelectedItems() {
+        mSharableItemListModel.deleteSelectedItemsIfActionMode();
+    }
+
     public void changeToDefaultBackgroundColor() {
         getSharableItemListModel().changeBackgroundColor(Color.WHITE);
     }

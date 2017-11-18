@@ -30,6 +30,7 @@ public class SharableItemListModel {
     private StorageEventOperator mStorageEventOperator;
     private static SharableItemListModel mModel;
     private List<Item> mItemList = new CopyOnWriteArrayList<>();
+    private Set<SharableItemModel> mSelectedItemModelSet = new HashSet<>();
     private Set<BackgroundColorChangedListener> mBackgroundColorChangedListeners = new HashSet<>();
     private ActionModeState mActionModeState;
 
@@ -72,6 +73,22 @@ public class SharableItemListModel {
         mStorageEventOperator.addItem(newItemName);
     }
 
+    void deleteItem(String itemName) {
+        mStorageEventOperator.removeItem(itemName);
+    }
+
+    public void deleteSelectedItemsIfActionMode() {
+        if (mActionModeState.isActionMode()) {
+            collectSelectedItems().forEach(item -> deleteItem(item.getText()));
+        } else {
+            Log.w(LOG_TAG, "ignore items deletion, since ActionMode is not started.");
+        }
+    }
+
+    private Set<SharableItemModel> collectSelectedItems() {
+        return mSelectedItemModelSet;
+    }
+
     String getText(int index) {
         if (index > mItemList.size() - 1) {
             return "Larger than the list size";
@@ -100,6 +117,18 @@ public class SharableItemListModel {
         clearBackgroundColorChangeListenerSet();
         clearActionModeStateListener();
         notifyListItemChanged();
+    }
+
+    public void registerSelectedItem(SharableItemModel itemModel) {
+        mSelectedItemModelSet.add(itemModel);
+    }
+
+    public void unregisterSelectedItem(SharableItemModel itemModel) {
+        mSelectedItemModelSet.remove(itemModel);
+    }
+
+    private void clearSelectedItemSet() {
+        mSelectedItemModelSet.clear();
     }
 
     private int getIndexOfTheItem(String itemName) {
@@ -153,6 +182,10 @@ public class SharableItemListModel {
 
     void setActionMode(boolean isActionMode) {
         mActionModeState.setActionMode(isActionMode);
+        // clear selected item set when ActionMode is finished
+        if (!isActionMode) {
+            clearSelectedItemSet();
+        }
     }
 
     interface BackgroundColorChangedListener {

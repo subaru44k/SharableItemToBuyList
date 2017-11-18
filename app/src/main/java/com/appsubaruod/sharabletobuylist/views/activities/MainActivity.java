@@ -134,6 +134,8 @@ public class MainActivity extends AppCompatActivity
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.item_archive:
+                        mModelManipulator.archiveSelectedItems();
+                        actionMode.finish();
                         break;
                     default:
                         Log.w(LOG_TAG, "Unsupported item is clicked on ActionMode");
