@@ -81,7 +81,7 @@ public class SharableItemListModel {
         FirebaseEventReporter.getInstance().sendDeleteItemEventLog(itemName);
     }
 
-    public void deleteSelectedItemsIfActionMode() {
+    void deleteSelectedItemsIfActionMode() {
         if (mActionModeState.isActionMode()) {
             collectSelectedItems().forEach(item -> deleteItem(item.getText()));
         } else {
@@ -123,11 +123,11 @@ public class SharableItemListModel {
         notifyListItemChanged();
     }
 
-    public void registerSelectedItem(SharableItemModel itemModel) {
+    void registerSelectedItem(SharableItemModel itemModel) {
         mSelectedItemModelSet.add(itemModel);
     }
 
-    public void unregisterSelectedItem(SharableItemModel itemModel) {
+    void unregisterSelectedItem(SharableItemModel itemModel) {
         mSelectedItemModelSet.remove(itemModel);
     }
 
