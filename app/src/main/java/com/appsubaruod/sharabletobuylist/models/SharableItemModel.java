@@ -1,13 +1,10 @@
 package com.appsubaruod.sharabletobuylist.models;
 
 import android.graphics.Color;
-import android.os.Bundle;
 
 import com.appsubaruod.sharabletobuylist.state.ActionModeState;
-import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseEventReporter;
 import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
 

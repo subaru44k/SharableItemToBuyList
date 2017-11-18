@@ -1,18 +1,15 @@
 package com.appsubaruod.sharabletobuylist.models;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.state.ActionModeState;
 import com.appsubaruod.sharabletobuylist.storage.eventoperator.StorageEventOperator;
-import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseEventReporter;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemCompletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemDeletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ListItemChangedEvent;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

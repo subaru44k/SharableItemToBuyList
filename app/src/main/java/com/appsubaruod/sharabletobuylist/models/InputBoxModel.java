@@ -1,12 +1,10 @@
 package com.appsubaruod.sharabletobuylist.models;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.R;
-import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.messages.CloseFloatingActionMenuEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 

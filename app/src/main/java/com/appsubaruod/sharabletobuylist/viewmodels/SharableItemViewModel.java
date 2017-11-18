@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.appsubaruod.sharabletobuylist.BR;
-import com.appsubaruod.sharabletobuylist.models.SharableItemListModel;
 import com.appsubaruod.sharabletobuylist.models.SharableItemModel;
 
 /**

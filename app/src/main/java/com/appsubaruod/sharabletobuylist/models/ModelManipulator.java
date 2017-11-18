@@ -2,8 +2,6 @@ package com.appsubaruod.sharabletobuylist.models;
 
 import android.graphics.Color;
 
-import com.appsubaruod.sharabletobuylist.viewmodels.SharableItemListViewModel;
-
 /**
  * Created by s-yamada on 2017/10/13.
  */
