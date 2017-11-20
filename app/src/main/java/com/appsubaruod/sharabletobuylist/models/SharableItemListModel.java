@@ -68,6 +68,10 @@ public class SharableItemListModel {
         return mModel;
     }
 
+    public void cancelNotification() {
+        mNotificationTaskCoordinator.cancelNotification();
+    }
+
     void addItem(String itemName) {
         mStorageEventOperator.addItem(itemName);
         FirebaseEventReporter.getInstance().sendAddItemEventLog(itemName);

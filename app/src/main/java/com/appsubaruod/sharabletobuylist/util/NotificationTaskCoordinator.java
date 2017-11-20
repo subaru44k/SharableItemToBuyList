@@ -6,11 +6,17 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.views.activities.MainActivity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -25,14 +31,95 @@ import java.util.concurrent.TimeUnit;
  */
 public class NotificationTaskCoordinator {
     private Context mContext;
+    private NotificationManager mNotificationManager;
+    private int mNotificationId = 1;
+    private Map<String, List<OperationType>> mNotifyOperation = new HashMap<>();
+    private ScheduledFuture mFuture;
 
     public NotificationTaskCoordinator(Context context) {
         mContext = context;
+        mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    public boolean requestAddedNotification(String itemName) {
-        getScheduledExecutorService().schedule(() -> {
-            Notification.Builder builder = getNotificationBuilder().setContentText("Added : " + itemName);
+    public void cancelNotification() {
+        mNotificationManager.cancelAll();
+        changeNotificationId();
+        clearOperations();
+    }
+
+    private void clearOperations() {
+        mNotifyOperation = new HashMap<>();
+    }
+
+    private void changeNotificationId() {
+        mNotificationId++;
+    }
+
+    private int getNotificationId() {
+        return mNotificationId;
+    }
+
+    private void putNotificationDetail(OperationType type, String itemName) {
+        if (!mNotifyOperation.containsKey(itemName)) {
+            mNotifyOperation.put(itemName, new ArrayList<>());
+        }
+        List<OperationType> operations = mNotifyOperation.get(itemName);
+        operations.add(type);
+    }
+
+    public String getSequenceOfModification() {
+        if (mNotifyOperation == null) {
+            return null;
+        }
+        StringBuilder modification = new StringBuilder();
+        mNotifyOperation.entrySet().forEach(entry -> {
+            modification.append(entry.getKey() + " " + interpretOperations(entry.getValue()));
+            modification.append(".");
+        });
+
+        // eliminate final .
+        if (modification.length() != 0) {
+            modification.deleteCharAt(modification.length() - 1);
+        }
+        return modification.toString();
+    }
+
+    private String interpretOperations(List<OperationType> operations) {
+        StringBuilder builder = new StringBuilder();
+        operations.forEach(operation -> {
+            switch (operation) {
+                case ITEM_ADDED:
+                    builder.append("is added");
+                    break;
+                case ITEM_DELETED:
+                    builder.append("is deleted");
+                    break;
+                case ITEM_COMPLETED:
+                    builder.append("is completed");
+                    break;
+                default:
+                    builder.append("unknown operation");
+            }
+        });
+        return builder.toString();
+    }
+
+    public int getSmallIcon() {
+        return R.drawable.ic_launcher_background;
+    }
+
+    private void createNotificationAsync() {
+        if (mFuture != null && !mFuture.isDone()) {
+            mFuture.cancel(true);
+        }
+
+        mFuture = getScheduledExecutorService().schedule(() -> {
+            String contentText = getSequenceOfModification();
+            if (contentText == "") {
+                return;
+            }
+            Notification.Builder builder = getNotificationBuilder().setContentText(contentText);
 
             Intent resultIntent = new Intent(mContext, MainActivity.class);
 
@@ -46,99 +133,50 @@ public class NotificationTaskCoordinator {
                     );
 
             builder.setContentIntent(resultPendingIntent);
-            NotificationManager mNotificationManager =
-                    (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.notify(1, builder.build());
+            mNotificationManager.notify(getNotificationId(), builder.build());
 
         }, 1, TimeUnit.SECONDS);
-
-        return true;
     }
 
-    public boolean requestModifiedNotification(String oldItemName, String newItemName) {
-
-        getScheduledExecutorService().schedule(() -> {
-            Notification.Builder builder = getNotificationBuilder().setContentText("Modified : " + oldItemName + " -> " + newItemName);
-
-            Intent resultIntent = new Intent(mContext, MainActivity.class);
-
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-            stackBuilder.addParentStack(MainActivity.class);
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(
-                            0,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-
-            builder.setContentIntent(resultPendingIntent);
-            NotificationManager mNotificationManager =
-                    (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.notify(1, builder.build());
-
-        }, 1, TimeUnit.SECONDS);
-        return true;
+    public void requestAddedNotification(String itemName) {
+        putNotificationDetail(OperationType.ITEM_ADDED, itemName);
+        createNotificationAsync();
     }
 
-    public boolean requestDeletedNotification(String itemName) {
-        getScheduledExecutorService().schedule(() -> {
-            Notification.Builder builder = getNotificationBuilder().setContentText("Deleted : " + itemName);
-
-            Intent resultIntent = new Intent(mContext, MainActivity.class);
-
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-            stackBuilder.addParentStack(MainActivity.class);
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(
-                            0,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-
-            builder.setContentIntent(resultPendingIntent);
-            NotificationManager mNotificationManager =
-                    (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.notify(1, builder.build());
-
-        }, 1, TimeUnit.SECONDS);
-
-        return true;
+    public void requestModifiedNotification(String oldItemName, String newItemName) {
+        putNotificationDetail(OperationType.ITEM_DELETED, oldItemName);
+        putNotificationDetail(OperationType.ITEM_ADDED, newItemName);
+        createNotificationAsync();
     }
 
-    public boolean requestCompletedNotification(String itemName) {
-        getScheduledExecutorService().schedule(() -> {
-            Notification.Builder builder = getNotificationBuilder().setContentText("Completed : " + itemName);
+    public void requestDeletedNotification(String itemName) {
+        putNotificationDetail(OperationType.ITEM_DELETED, itemName);
+        createNotificationAsync();
+    }
 
-            Intent resultIntent = new Intent(mContext, MainActivity.class);
-
-            TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-            stackBuilder.addParentStack(MainActivity.class);
-            stackBuilder.addNextIntent(resultIntent);
-            PendingIntent resultPendingIntent =
-                    stackBuilder.getPendingIntent(
-                            0,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                    );
-
-            builder.setContentIntent(resultPendingIntent);
-            NotificationManager mNotificationManager =
-                    (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-            mNotificationManager.notify(1, builder.build());
-
-        }, 1, TimeUnit.SECONDS);
-
-        return true;
+    public void requestCompletedNotification(String itemName) {
+        putNotificationDetail(OperationType.ITEM_COMPLETED, itemName);
+        createNotificationAsync();
     }
 
     private Notification.Builder getNotificationBuilder() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean("fromNotification", true);
         Notification.Builder mBuilder = new Notification.Builder(mContext)
                 .setAutoCancel(true)
                 .setContentTitle("Sharable item list")
-                .setSmallIcon(R.drawable.ic_launcher_background);
+                .setSmallIcon(getSmallIcon())
+                .setStyle(new Notification.BigTextStyle());
         return mBuilder;
     }
 
     private ScheduledExecutorService getScheduledExecutorService() {
         return WorkerThread.getNotificationTaskExecutor();
+    }
+
+    enum OperationType {
+        ITEM_ADDED,
+        ITEM_DELETED,
+        ITEM_COMPLETED
     }
 }
