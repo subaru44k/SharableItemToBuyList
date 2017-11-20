@@ -23,6 +23,10 @@ public class ModelManipulator {
         return mInputBoxModel;
     }
 
+    public void cancelNotification() {
+        getSharableItemListModel().cancelNotification();
+    }
+
     public void archiveSelectedItems() {
         mSharableItemListModel.deleteSelectedItemsIfActionMode();
     }
