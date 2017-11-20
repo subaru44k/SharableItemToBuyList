@@ -132,8 +132,9 @@ public class NotificationTaskCoordinator {
 
     private Notification.Builder getNotificationBuilder() {
         Notification.Builder mBuilder = new Notification.Builder(mContext)
+                .setAutoCancel(true)
                 .setContentTitle("Sharable item list")
-                .setSmallIcon(R.drawable.ic_add_item);
+                .setSmallIcon(R.drawable.ic_launcher_background);
         return mBuilder;
     }
 
