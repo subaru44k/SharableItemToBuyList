@@ -24,7 +24,7 @@ public class InputBoxModel {
 
     private Context mContext;
     private String mTextBoxString;
-    private static int mExpansionState;
+    private int mExpansionState;
 
     private SharableItemListModel mSharableItemListModel = SharableItemListModel.getInstanceIfCreated();
 

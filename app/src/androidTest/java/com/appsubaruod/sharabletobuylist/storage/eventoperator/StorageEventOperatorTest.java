@@ -31,10 +31,12 @@ public class StorageEventOperatorTest {
     @BeforeClass
     public static void initialize() {
         mOperator = new StorageEventOperator(InstrumentationRegistry.getTargetContext());
+        mOperator.changeRootPathForTesting();
     }
 
     @Before
     public void setUp() {
+        waitAWhile();
         mOperator.removeAllItems();
         waitAWhile();
         mLatch = new CountDownLatch(1);

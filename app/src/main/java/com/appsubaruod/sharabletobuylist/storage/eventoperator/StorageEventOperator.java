@@ -39,6 +39,10 @@ public class StorageEventOperator {
         mInterpretator.registerStorageEventListener(new StorageEventObserver());
     }
 
+    public void changeRootPathForTesting() {
+        mInterpretator.changeRootPath("UnitTest");
+    }
+
     public void addItem(String itemToAdd) {
         getDatabaseExecutor().submit(() ->
                 mInterpretator.add(itemToAdd));

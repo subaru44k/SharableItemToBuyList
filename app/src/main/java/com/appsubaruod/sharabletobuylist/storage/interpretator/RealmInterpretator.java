@@ -26,6 +26,11 @@ public class RealmInterpretator implements StorageInterpretator {
         Realm.init(context);
     }
 
+    public void changeRootPath(String rootPath) {
+        // TODO implement here if this interpretator should be supported
+        throw new IllegalStateException("This method is not supported as of now");
+    }
+
     @Override
     public void add(String itemToAdd) {
         Realm realm = Realm.getDefaultInstance();

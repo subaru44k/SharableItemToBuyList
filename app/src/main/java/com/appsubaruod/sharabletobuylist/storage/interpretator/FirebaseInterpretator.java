@@ -45,9 +45,9 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
     private final FirebaseDatabase mFirebaseDatabase;
     private Set<StorageEvent> mEventListeners = new CopyOnWriteArraySet<>();
-    private List<Item> mItemList = new ArrayList<>();
-    private Map<String, String> mKeyMap = new HashMap<>();
-    private CountDownLatch mItemObtainedLatch = new CountDownLatch(1);
+    private List<Item> mItemList;
+    private Map<String, String> mKeyMap;
+    private CountDownLatch mItemObtainedLatch;
     private ValueEventListener mValueEventListener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -151,6 +151,13 @@ public class FirebaseInterpretator implements StorageInterpretator {
         mRootPath = rootPath;
         mItemObjectPath = rootPath + "/" + ITEM_OBJECT_PATH;
         mUniqueKeyPath = rootPath + "/" + UNIQUE_KEY_PATH;
+        initializeInternalValues();
+    }
+
+    private void initializeInternalValues() {
+        mItemList = new ArrayList<>();
+        mKeyMap = new HashMap<>();
+        mItemObtainedLatch = new CountDownLatch(1);
     }
 
     private void startMonitoringItemChange() {
@@ -217,6 +224,7 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
     @Override
     public void add(String itemToAdd) {
+        Log.d(LOG_TAG, "add item : " + itemToAdd);
         synchronized (mLock) {
             // TODO quick add operation can add same value.
             // Also it can occur on off line mode and multi update from other user.
@@ -313,11 +321,14 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
     @Override
     public void setCompleted(String itemToSetCompleted, boolean isCompleted) {
+        Log.d(LOG_TAG, "setCompleted : " + isCompleted);
         synchronized (mLock) {
             if (!mKeyMap.containsKey(itemToSetCompleted)) {
                 return;
             }
-            if (mKeyMap.get(itemToSetCompleted).equals(isCompleted)) {
+            if (mItemList.stream()
+                    .filter(item -> item.getItemName().equals(itemToSetCompleted))
+                    .allMatch(item -> item.isBought() == isCompleted)) {
                 return;
             }
 

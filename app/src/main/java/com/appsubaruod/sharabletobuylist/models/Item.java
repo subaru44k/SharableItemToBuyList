@@ -33,7 +33,7 @@ public class Item {
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         }
@@ -51,6 +51,6 @@ public class Item {
     public int hashCode() {
         // addition below can overflow, but the result still meets contracts of hashCode().
         // equal object produces same hash code even if it overflows.
-        return mItemName.hashCode() + (new Boolean(mIsBought)).hashCode();
+        return mItemName.hashCode() + Boolean.valueOf(mIsBought).hashCode();
     }
 }

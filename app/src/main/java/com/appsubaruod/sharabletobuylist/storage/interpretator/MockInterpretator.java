@@ -28,6 +28,10 @@ public class MockInterpretator implements StorageInterpretator {
         // do not use context
     }
 
+    public void changeRootPath(String rootPath) {
+
+    }
+
     @Override
     public void add(String itemToAdd) {
         Log.d(LOG_TAG, "Add item : " + itemToAdd);
