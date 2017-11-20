@@ -24,6 +24,7 @@ import com.appsubaruod.sharabletobuylist.models.ModelManipulator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
+import com.appsubaruod.sharabletobuylist.views.fragments.CreateChannelFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -204,18 +205,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        switch (id) {
+            case R.id.public_channel:
+                break;
+            case R.id.create_channel:
+                CreateChannelFragment fragment = new CreateChannelFragment();
+                fragment.show(getFragmentManager(), "fragment");
+                break;
+            case R.id.nav_share:
+                break;
+            default:
+                break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

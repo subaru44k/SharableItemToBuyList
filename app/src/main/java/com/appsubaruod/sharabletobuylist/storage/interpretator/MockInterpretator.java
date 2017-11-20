@@ -33,6 +33,11 @@ public class MockInterpretator implements StorageInterpretator {
     }
 
     @Override
+    public String createAndGetNewUniqueId() {
+        return null;
+    }
+
+    @Override
     public void add(String itemToAdd) {
         Log.d(LOG_TAG, "Add item : " + itemToAdd);
         mScheduledService.schedule(() -> {

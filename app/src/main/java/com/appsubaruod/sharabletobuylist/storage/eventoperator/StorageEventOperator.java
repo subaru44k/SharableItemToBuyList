@@ -1,6 +1,7 @@
 package com.appsubaruod.sharabletobuylist.storage.eventoperator;
 
 import android.content.Context;
+import android.support.annotation.VisibleForTesting;
 
 import com.appsubaruod.sharabletobuylist.di.DaggerStorageInterpretatorComponent;
 import com.appsubaruod.sharabletobuylist.di.StorageInterpretatorModule;
@@ -39,8 +40,16 @@ public class StorageEventOperator {
         mInterpretator.registerStorageEventListener(new StorageEventObserver());
     }
 
+    public void changeRootPath(String path) {
+        mInterpretator.changeRootPath(path);
+    }
+
     public void changeRootPathForTesting() {
         mInterpretator.changeRootPath("UnitTest");
+    }
+
+    public String createAndGetNewUniqueChannel() {
+        return mInterpretator.createAndGetNewUniqueId();
     }
 
     public void addItem(String itemToAdd) {
