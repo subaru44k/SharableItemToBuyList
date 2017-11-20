@@ -4,7 +4,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.appsubaruod.sharabletobuylist.util.Constant;
 import com.appsubaruod.sharabletobuylist.util.WorkerThread;
+import com.appsubaruod.sharabletobuylist.util.messages.ChannelCreatedEvent;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +53,7 @@ public class ChannelModel {
         }
         String newChannelId = mSharableItemListModel.createAndGetUniqueChannel();
         mChannelMap.put(channelName, newChannelId);
+        EventBus.getDefault().post(new ChannelCreatedEvent(channelName));
         //TODO storeLocalChannelMap(channelName, newChannelId);
     }
 
@@ -63,6 +68,9 @@ public class ChannelModel {
         } else {
             Log.w(LOG_TAG, channelName + " not found. Ignore.");
         }
+    }
 
+    void changeToDefaultChannel() {
+        mSharableItemListModel.changeToDefaultPath();
     }
 }

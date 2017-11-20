@@ -8,6 +8,7 @@ import android.graphics.Color;
 public class ModelManipulator {
     private SharableItemListModel mSharableItemListModel;
     private InputBoxModel mInputBoxModel;
+    private ChannelModel mChannelModel;
 
     private SharableItemListModel getSharableItemListModel() {
         if (mSharableItemListModel == null) {
@@ -21,6 +22,13 @@ public class ModelManipulator {
             mInputBoxModel = InputBoxModel.getInstanceIfCreated();
         }
         return mInputBoxModel;
+    }
+
+    private ChannelModel getChannelModel() {
+        if (mChannelModel == null) {
+            mChannelModel = ChannelModel.getInstance();
+        }
+        return mChannelModel;
     }
 
     public void archiveSelectedItems() {
@@ -41,5 +49,13 @@ public class ModelManipulator {
 
     public void setActionMode(boolean isActionMode) {
         getSharableItemListModel().setActionMode(isActionMode);
+    }
+
+    public void changeChannel(String channelName) {
+        getChannelModel().changeChannel(channelName);
+    }
+
+    public void changeToDefaultChannel() {
+        getChannelModel().changeToDefaultChannel();
     }
 }

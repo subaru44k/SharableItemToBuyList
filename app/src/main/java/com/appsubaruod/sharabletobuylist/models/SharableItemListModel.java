@@ -206,6 +206,11 @@ public class SharableItemListModel {
         obtainItemsAsync();
     }
 
+    void changeToDefaultPath() {
+        mStorageEventOperator.changeRootPath(Constant.DEFAULT_PATH);
+        obtainItemsAsync();
+    }
+
     interface BackgroundColorChangedListener {
         void onBackgroundColorChanged(int color);
     }

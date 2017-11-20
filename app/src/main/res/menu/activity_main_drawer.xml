@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <item android:title="Channels">
+    <item
+        android:title="@string/navigation_drawer_channels">
         <menu>
             <item
                 android:id="@+id/public_channel"

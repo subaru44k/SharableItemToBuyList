@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
  */
 
 public class FirebaseInterpretator implements StorageInterpretator {
-    public static final String DEFAULT_PATH = "DEFAULT_PATH";
     private final Object mLock = new Object();
     private static final String LOG_TAG = FirebaseInterpretator.class.getName();
     private static final String ITEM_OBJECT_PATH = "itemObject";
@@ -134,7 +133,7 @@ public class FirebaseInterpretator implements StorageInterpretator {
         mFirebaseDatabase = FirebasePersistentDatabase.getInstance();
 
         if (rootPath == null || "".equals(rootPath)) {
-            changeDatabasePath(DEFAULT_PATH);
+            changeDatabasePath(Constant.DEFAULT_PATH);
         } else {
             changeDatabasePath(rootPath);
         }

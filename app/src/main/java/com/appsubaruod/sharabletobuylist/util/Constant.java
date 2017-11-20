@@ -6,4 +6,5 @@ package com.appsubaruod.sharabletobuylist.util;
 
 public class Constant {
     public static final String SHARABLE_CHANNEL_ROOT_PATH = "sharable";
+    public static final String DEFAULT_PATH = "DEFAULT_PATH";
 }

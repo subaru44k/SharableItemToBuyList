@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.views.activities;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -15,13 +16,16 @@ import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.appsubaruod.sharabletobuylist.R;
+import com.appsubaruod.sharabletobuylist.models.ChannelModel;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
 import com.appsubaruod.sharabletobuylist.models.ModelManipulator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
+import com.appsubaruod.sharabletobuylist.util.messages.ChannelCreatedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.CreateChannelFragment;
@@ -36,6 +40,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final int ID_CHANNEL_ITEM = 100;
     private final String LOG_TAG = MainActivity.class.getName();
     private BottomSheetBehavior mBottomSheetBehavior;
     private ModelManipulator mModelManipulator;
@@ -207,6 +212,7 @@ public class MainActivity extends AppCompatActivity
 
         switch (id) {
             case R.id.public_channel:
+                mModelManipulator.changeToDefaultChannel();
                 break;
             case R.id.create_channel:
                 CreateChannelFragment fragment = new CreateChannelFragment();
@@ -214,8 +220,11 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_share:
                 break;
-            default:
+            case ID_CHANNEL_ITEM:
+                mModelManipulator.changeChannel(item.getTitle().toString());
                 break;
+            default:
+                Log.w(LOG_TAG, "Unknown menu id : " + id);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -227,5 +236,29 @@ public class MainActivity extends AppCompatActivity
     public void handleInputBoxExpansion(ExpandInputBoxEvent event) {
         Log.d(LOG_TAG, "handleInputBoxExpansion");
         mBottomSheetBehavior.setState(event.getExpansionType());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChannelCreated(ChannelCreatedEvent event) {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        Menu menu = navigationView.getMenu();
+        MenuItem item = getChannelMenuItem(menu);
+        if (item == null) {
+            return;
+        }
+        SubMenu subMenu = item.getSubMenu();
+        subMenu.add(Menu.NONE, ID_CHANNEL_ITEM, Menu.NONE, event.getChannelName())
+                .setIcon(R.drawable.ic_menu_slideshow);
+    }
+
+    private MenuItem getChannelMenuItem(Menu menu) {
+        MenuItem item = null;
+        for (int i=0; i < menu.size() - 1; i++) {
+            item = menu.getItem(i);
+            if (getString(R.string.navigation_drawer_channels).equals(item.getTitle())) {
+                break;
+            }
+        }
+        return item;
     }
 }
