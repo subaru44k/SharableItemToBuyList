@@ -1,7 +1,6 @@
 package com.appsubaruod.sharabletobuylist.storage.eventoperator;
 
 import android.content.Context;
-import android.support.annotation.VisibleForTesting;
 
 import com.appsubaruod.sharabletobuylist.di.DaggerStorageInterpretatorComponent;
 import com.appsubaruod.sharabletobuylist.di.StorageInterpretatorModule;

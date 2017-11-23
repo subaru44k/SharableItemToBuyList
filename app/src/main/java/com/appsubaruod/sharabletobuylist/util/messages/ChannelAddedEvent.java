@@ -4,10 +4,10 @@ package com.appsubaruod.sharabletobuylist.util.messages;
  * Created by s-yamada on 2017/11/20.
  */
 
-public class ChannelCreatedEvent {
+public class ChannelAddedEvent {
     private String mChannelName;
 
-    public ChannelCreatedEvent(String channelName) {
+    public ChannelAddedEvent(String channelName) {
         mChannelName = channelName;
     }
 

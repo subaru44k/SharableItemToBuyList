@@ -1,6 +1,5 @@
 package com.appsubaruod.sharabletobuylist.views.activities;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -21,12 +20,12 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.appsubaruod.sharabletobuylist.R;
-import com.appsubaruod.sharabletobuylist.models.ChannelModel;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
 import com.appsubaruod.sharabletobuylist.models.ModelManipulator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
-import com.appsubaruod.sharabletobuylist.util.messages.ChannelCreatedEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.ChannelAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.MultipleChannelAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.CreateChannelFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
@@ -119,6 +118,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         mModelManipulator = new ModelManipulator();
+        mModelManipulator.initializeChannelModel(getApplicationContext());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -238,8 +238,13 @@ public class MainActivity extends AppCompatActivity
         mBottomSheetBehavior.setState(event.getExpansionType());
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onMultipleChannelAdded(MultipleChannelAddedEvent event) {
+        event.getChannelSet().forEach(channel -> onChannelAdded(new ChannelAddedEvent(channel)));
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onChannelCreated(ChannelCreatedEvent event) {
+    public void onChannelAdded(ChannelAddedEvent event) {
         NavigationView navigationView = findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         MenuItem item = getChannelMenuItem(menu);

@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.models;
 
+import android.content.Context;
 import android.graphics.Color;
 
 /**
@@ -26,7 +27,7 @@ public class ModelManipulator {
 
     private ChannelModel getChannelModel() {
         if (mChannelModel == null) {
-            mChannelModel = ChannelModel.getInstance();
+            mChannelModel = ChannelModel.getInstanceIfCreated();
         }
         return mChannelModel;
     }
@@ -57,5 +58,9 @@ public class ModelManipulator {
 
     public void changeToDefaultChannel() {
         getChannelModel().changeToDefaultChannel();
+    }
+
+    public void initializeChannelModel(Context applicationContext) {
+        mChannelModel = ChannelModel.getInstance(applicationContext);
     }
 }

@@ -8,8 +8,7 @@ public class CreateChannelModel {
     private ChannelModel mChannelModel;
 
     public CreateChannelModel() {
-        mChannelModel = new ChannelModel();
-        mChannelModel = ChannelModel.getInstance();
+        mChannelModel = ChannelModel.getInstanceIfCreated();
     }
 
     public void createNewChannel(String channelName) {

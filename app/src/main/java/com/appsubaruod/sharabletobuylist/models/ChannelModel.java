@@ -4,9 +4,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.appsubaruod.sharabletobuylist.util.Constant;
+import com.appsubaruod.sharabletobuylist.storage.UserDataStorage;
+import com.appsubaruod.sharabletobuylist.storage.userdata.LocalUserDataStorage;
 import com.appsubaruod.sharabletobuylist.util.WorkerThread;
-import com.appsubaruod.sharabletobuylist.util.messages.ChannelCreatedEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.ChannelAddedEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.MultipleChannelAddedEvent;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -20,27 +22,46 @@ import java.util.concurrent.CountDownLatch;
 
 public class ChannelModel {
     private static ChannelModel instance;
-    private SharableItemListModel mSharableItemListModel;
     private CountDownLatch mCountDownLatch = new CountDownLatch(1);
     private Map<String, String> mChannelMap = new HashMap<>();
+    private UserDataStorage mUserDataStorage;
 
     private static final String LOG_TAG = ChannelModel.class.getName();
 
-    ChannelModel() {
-        mSharableItemListModel = SharableItemListModel.getInstanceIfCreated();
+    private ChannelModel(Context context) {
+        mUserDataStorage = new LocalUserDataStorage(context);
         readLocalChannelMapAsync();
     }
 
     private void readLocalChannelMapAsync() {
         WorkerThread.getSingleExecutor().submit(() -> {
-            //TODO readLocalChannelMap();
+            mChannelMap = mUserDataStorage.readChannelData();
+            // Send multiple channel with sticky event.
+            // Since Activity registers its instance to EventBus when onStart() is called,
+            // and readLocalChannelMapAsync method is called onCreate(),
+            // read local channel could be faster than receiver side's gets ready.
+            // So the system should send sticky event here.
+            // Also we should note sticky event will be overwritten when another sticky event is sent.
+            // Therefore the system should gather some information to one event.
+            EventBus.getDefault().postSticky(new MultipleChannelAddedEvent(mChannelMap.keySet()));
             mCountDownLatch.countDown();
         });
     }
 
-    public static synchronized ChannelModel getInstance() {
+    private void writeLocalChannelMapAsync(Map<String, String> channelMap) {
+        WorkerThread.getSingleExecutor().submit(() -> mUserDataStorage.writeChannelData(channelMap));
+    }
+
+    static synchronized ChannelModel getInstance(Context context) {
         if (instance == null) {
-            instance = new ChannelModel();
+            instance = new ChannelModel(context);
+        }
+        return instance;
+    }
+
+    static synchronized ChannelModel getInstanceIfCreated() {
+        if (instance == null) {
+            throw new IllegalStateException("ChannelModel is not instantiated");
         }
         return instance;
     }
@@ -51,10 +72,11 @@ public class ChannelModel {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        String newChannelId = mSharableItemListModel.createAndGetUniqueChannel();
+        String newChannelId =
+                SharableItemListModel.getInstanceIfCreated().createAndGetUniqueChannel();
         mChannelMap.put(channelName, newChannelId);
-        EventBus.getDefault().post(new ChannelCreatedEvent(channelName));
-        //TODO storeLocalChannelMap(channelName, newChannelId);
+        EventBus.getDefault().post(new ChannelAddedEvent(channelName));
+        writeLocalChannelMapAsync(mChannelMap);
     }
 
     void changeChannel(@NonNull String channelName) {
@@ -64,13 +86,14 @@ public class ChannelModel {
             e.printStackTrace();
         }
         if (mChannelMap.containsKey(channelName)) {
-            mSharableItemListModel.changeRootPath(mChannelMap.get(channelName));
+            SharableItemListModel.getInstanceIfCreated()
+                    .changeRootPath(mChannelMap.get(channelName));
         } else {
             Log.w(LOG_TAG, channelName + " not found. Ignore.");
         }
     }
 
     void changeToDefaultChannel() {
-        mSharableItemListModel.changeToDefaultPath();
+        SharableItemListModel.getInstanceIfCreated().changeToDefaultPath();
     }
 }

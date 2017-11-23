@@ -1,7 +1,5 @@
 package com.appsubaruod.sharabletobuylist.models;
 
-import android.support.annotation.Nullable;
-
 /**
  * Created by s-yamada on 2017/07/21.
  */
