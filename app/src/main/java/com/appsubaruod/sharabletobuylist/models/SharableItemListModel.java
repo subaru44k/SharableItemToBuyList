@@ -7,6 +7,7 @@ import com.appsubaruod.sharabletobuylist.state.ActionModeState;
 import com.appsubaruod.sharabletobuylist.storage.eventoperator.StorageEventOperator;
 import com.appsubaruod.sharabletobuylist.util.Constant;
 import com.appsubaruod.sharabletobuylist.util.FirebaseEventReporter;
+import com.appsubaruod.sharabletobuylist.util.NotificationTaskCoordinator;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemCompletedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemDeletedEvent;
@@ -35,12 +36,14 @@ public class SharableItemListModel {
     private Set<SharableItemModel> mSelectedItemModelSet = new HashSet<>();
     private Set<BackgroundColorChangedListener> mBackgroundColorChangedListeners = new HashSet<>();
     private ActionModeState mActionModeState;
+    private NotificationTaskCoordinator mNotificationTaskCoordinator;
 
     private SharableItemListModel(Context context) {
         mContext = context;
         mStorageEventOperator = new StorageEventOperator(mContext);
         obtainItemsAsync();
         mActionModeState = new ActionModeState();
+        mNotificationTaskCoordinator = new NotificationTaskCoordinator(mContext);
 
         EventBus.getDefault().register(this);
     }
@@ -68,6 +71,10 @@ public class SharableItemListModel {
             throw new IllegalStateException();
         }
         return mModel;
+    }
+
+    public void cancelNotification() {
+        mNotificationTaskCoordinator.cancelNotification();
     }
 
     void addItem(String itemName) {
@@ -116,6 +123,17 @@ public class SharableItemListModel {
         clearBackgroundColorChangeListenerSet();
         clearActionModeStateListener();
         notifyListItemChanged();
+        mNotificationTaskCoordinator.requestAddedNotification(event.getItemName());
+    }
+
+    @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
+    public void onItemDeleted(ItemDeletedEvent event) {
+        Log.d(LOG_TAG, "Receive item deleted : " + event.getItemName());
+        mItemList.remove(getIndexOfTheItem(event.getItemName()));
+        clearBackgroundColorChangeListenerSet();
+        clearActionModeStateListener();
+        notifyListItemChanged();
+        mNotificationTaskCoordinator.requestDeletedNotification(event.getItemName());
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
@@ -126,6 +144,7 @@ public class SharableItemListModel {
         clearBackgroundColorChangeListenerSet();
         clearActionModeStateListener();
         notifyListItemChanged();
+        mNotificationTaskCoordinator.requestCompletedNotification(event.getItemName());
     }
 
     void registerSelectedItem(SharableItemModel itemModel) {
@@ -148,15 +167,6 @@ public class SharableItemListModel {
             }
         });
         return index[0];
-    }
-
-    @Subscribe(threadMode = ThreadMode.BACKGROUND, sticky = true)
-    public void onItemDeleted(ItemDeletedEvent event) {
-        Log.d(LOG_TAG, "Receive item deleted : " + event.getItemName());
-        mItemList.remove(getIndexOfTheItem(event.getItemName()));
-        clearBackgroundColorChangeListenerSet();
-        clearActionModeStateListener();
-        notifyListItemChanged();
     }
 
     private void notifyListItemChanged() {

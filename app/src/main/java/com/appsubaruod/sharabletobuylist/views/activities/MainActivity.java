@@ -121,6 +121,12 @@ public class MainActivity extends AppCompatActivity
         mModelManipulator.initializeChannelModel(getApplicationContext());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mModelManipulator.cancelNotification();
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void startActionMode(StartActionModeEvent event) {
         this.startActionMode(new ActionMode.Callback() {
