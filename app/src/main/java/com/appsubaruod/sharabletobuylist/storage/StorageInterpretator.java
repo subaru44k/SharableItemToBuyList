@@ -11,6 +11,8 @@ import java.util.List;
 public interface StorageInterpretator {
     void changeRootPath(String rootPath);
 
+    String createAndGetNewUniqueId();
+
     void add(String itemToAdd);
 
     void removeItem(String itemToDelete);

@@ -8,6 +8,7 @@ import android.util.Log;
 import com.appsubaruod.sharabletobuylist.models.Item;
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 import com.appsubaruod.sharabletobuylist.storage.firebase.FirebaseItem;
+import com.appsubaruod.sharabletobuylist.util.Constant;
 import com.appsubaruod.sharabletobuylist.util.FirebasePersistentDatabase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -132,7 +133,7 @@ public class FirebaseInterpretator implements StorageInterpretator {
         mFirebaseDatabase = FirebasePersistentDatabase.getInstance();
 
         if (rootPath == null || "".equals(rootPath)) {
-            changeDatabasePath("DEFAULT_PATH");
+            changeDatabasePath(Constant.DEFAULT_PATH);
         } else {
             changeDatabasePath(rootPath);
         }
@@ -145,6 +146,11 @@ public class FirebaseInterpretator implements StorageInterpretator {
         stopMonitoringItemChange();
         changeDatabasePath(rootPath);
         startMonitoringItemChange();
+    }
+
+    @Override
+    public String createAndGetNewUniqueId() {
+        return getSharableChannelReference().push().getKey();
     }
 
     private void changeDatabasePath(String rootPath) {
@@ -257,6 +263,10 @@ public class FirebaseInterpretator implements StorageInterpretator {
 
             rootReference.updateChildren(childUpdates);
         }
+    }
+
+    private DatabaseReference getSharableChannelReference() {
+        return mFirebaseDatabase.getReference(Constant.SHARABLE_CHANNEL_ROOT_PATH);
     }
 
     private DatabaseReference getRootReference() {

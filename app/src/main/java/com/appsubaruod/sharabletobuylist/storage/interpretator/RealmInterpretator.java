@@ -32,6 +32,12 @@ public class RealmInterpretator implements StorageInterpretator {
     }
 
     @Override
+    public String createAndGetNewUniqueId() {
+        // TODO implement here if this interpretator should be supported
+        return null;
+    }
+
+    @Override
     public void add(String itemToAdd) {
         Realm realm = Realm.getDefaultInstance();
 

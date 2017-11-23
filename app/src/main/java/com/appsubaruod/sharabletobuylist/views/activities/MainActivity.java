@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.RelativeLayout;
 
@@ -22,8 +23,11 @@ import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
 import com.appsubaruod.sharabletobuylist.models.ModelManipulator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
+import com.appsubaruod.sharabletobuylist.util.messages.ChannelAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
+import com.appsubaruod.sharabletobuylist.util.messages.MultipleChannelAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
+import com.appsubaruod.sharabletobuylist.views.fragments.CreateChannelFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -35,6 +39,7 @@ import org.greenrobot.eventbus.ThreadMode;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final int ID_CHANNEL_ITEM = 100;
     private final String LOG_TAG = MainActivity.class.getName();
     private BottomSheetBehavior mBottomSheetBehavior;
     private ModelManipulator mModelManipulator;
@@ -113,6 +118,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         mModelManipulator = new ModelManipulator();
+        mModelManipulator.initializeChannelModel(getApplicationContext());
     }
 
     @Override
@@ -210,18 +216,21 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        switch (id) {
+            case R.id.public_channel:
+                mModelManipulator.changeToDefaultChannel();
+                break;
+            case R.id.create_channel:
+                CreateChannelFragment fragment = new CreateChannelFragment();
+                fragment.show(getFragmentManager(), "fragment");
+                break;
+            case R.id.nav_share:
+                break;
+            case ID_CHANNEL_ITEM:
+                mModelManipulator.changeChannel(item.getTitle().toString());
+                break;
+            default:
+                Log.w(LOG_TAG, "Unknown menu id : " + id);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -233,5 +242,34 @@ public class MainActivity extends AppCompatActivity
     public void handleInputBoxExpansion(ExpandInputBoxEvent event) {
         Log.d(LOG_TAG, "handleInputBoxExpansion");
         mBottomSheetBehavior.setState(event.getExpansionType());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onMultipleChannelAdded(MultipleChannelAddedEvent event) {
+        event.getChannelSet().forEach(channel -> onChannelAdded(new ChannelAddedEvent(channel)));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onChannelAdded(ChannelAddedEvent event) {
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        Menu menu = navigationView.getMenu();
+        MenuItem item = getChannelMenuItem(menu);
+        if (item == null) {
+            return;
+        }
+        SubMenu subMenu = item.getSubMenu();
+        subMenu.add(Menu.NONE, ID_CHANNEL_ITEM, Menu.NONE, event.getChannelName())
+                .setIcon(R.drawable.ic_menu_slideshow);
+    }
+
+    private MenuItem getChannelMenuItem(Menu menu) {
+        MenuItem item = null;
+        for (int i=0; i < menu.size() - 1; i++) {
+            item = menu.getItem(i);
+            if (getString(R.string.navigation_drawer_channels).equals(item.getTitle())) {
+                break;
+            }
+        }
+        return item;
     }
 }

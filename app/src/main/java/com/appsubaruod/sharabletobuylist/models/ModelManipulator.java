@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.models;
 
+import android.content.Context;
 import android.graphics.Color;
 
 /**
@@ -8,6 +9,7 @@ import android.graphics.Color;
 public class ModelManipulator {
     private SharableItemListModel mSharableItemListModel;
     private InputBoxModel mInputBoxModel;
+    private ChannelModel mChannelModel;
 
     private SharableItemListModel getSharableItemListModel() {
         if (mSharableItemListModel == null) {
@@ -21,6 +23,13 @@ public class ModelManipulator {
             mInputBoxModel = InputBoxModel.getInstanceIfCreated();
         }
         return mInputBoxModel;
+    }
+
+    private ChannelModel getChannelModel() {
+        if (mChannelModel == null) {
+            mChannelModel = ChannelModel.getInstanceIfCreated();
+        }
+        return mChannelModel;
     }
 
     public void cancelNotification() {
@@ -45,5 +54,17 @@ public class ModelManipulator {
 
     public void setActionMode(boolean isActionMode) {
         getSharableItemListModel().setActionMode(isActionMode);
+    }
+
+    public void changeChannel(String channelName) {
+        getChannelModel().changeChannel(channelName);
+    }
+
+    public void changeToDefaultChannel() {
+        getChannelModel().changeToDefaultChannel();
+    }
+
+    public void initializeChannelModel(Context applicationContext) {
+        mChannelModel = ChannelModel.getInstance(applicationContext);
     }
 }

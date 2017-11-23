@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.state.ActionModeState;
 import com.appsubaruod.sharabletobuylist.storage.eventoperator.StorageEventOperator;
+import com.appsubaruod.sharabletobuylist.util.Constant;
 import com.appsubaruod.sharabletobuylist.util.FirebaseEventReporter;
 import com.appsubaruod.sharabletobuylist.util.NotificationTaskCoordinator;
 import com.appsubaruod.sharabletobuylist.util.messages.ItemAddedEvent;
@@ -40,6 +41,14 @@ public class SharableItemListModel {
     private SharableItemListModel(Context context) {
         mContext = context;
         mStorageEventOperator = new StorageEventOperator(mContext);
+        obtainItemsAsync();
+        mActionModeState = new ActionModeState();
+        mNotificationTaskCoordinator = new NotificationTaskCoordinator(mContext);
+
+        EventBus.getDefault().register(this);
+    }
+
+    private void obtainItemsAsync() {
         mStorageEventOperator.getItemsAsync(itemList -> {
             // Reverse list to show newer items to the top
             Collections.reverse(itemList);
@@ -48,10 +57,6 @@ public class SharableItemListModel {
             clearActionModeStateListener();
             notifyListItemChanged();
         });
-        mActionModeState = new ActionModeState();
-        mNotificationTaskCoordinator = new NotificationTaskCoordinator(mContext);
-
-        EventBus.getDefault().register(this);
     }
 
     public static synchronized SharableItemListModel getInstance(Context context) {
@@ -200,6 +205,20 @@ public class SharableItemListModel {
         if (!isActionMode) {
             clearSelectedItemSet();
         }
+    }
+
+    String createAndGetUniqueChannel() {
+        return mStorageEventOperator.createAndGetNewUniqueChannel();
+    }
+
+    void changeRootPath(String rootPath) {
+        mStorageEventOperator.changeRootPath(Constant.SHARABLE_CHANNEL_ROOT_PATH + "/"  + rootPath);
+        obtainItemsAsync();
+    }
+
+    void changeToDefaultPath() {
+        mStorageEventOperator.changeRootPath(Constant.DEFAULT_PATH);
+        obtainItemsAsync();
     }
 
     interface BackgroundColorChangedListener {
