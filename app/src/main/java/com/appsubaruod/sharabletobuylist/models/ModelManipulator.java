@@ -30,6 +30,7 @@ public class ModelManipulator {
             mChannelModel = ChannelModel.getInstanceIfCreated();
         }
         return mChannelModel;
+    }
 
     public void cancelNotification() {
         getSharableItemListModel().cancelNotification();
