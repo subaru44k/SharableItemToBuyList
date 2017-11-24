@@ -12,7 +12,7 @@ public class CreateChannelModel {
     }
 
     public void createNewChannel(String channelName) {
-        mChannelModel.createChannel(channelName);
+        mChannelModel.createChannelIfNotExist(channelName);
         mChannelModel.changeChannel(channelName);
     }
 

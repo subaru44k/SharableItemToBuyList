@@ -1,5 +1,7 @@
 package com.appsubaruod.sharabletobuylist.views.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -30,11 +32,15 @@ import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.CreateChannelFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
+import com.appsubaruod.sharabletobuylist.views.fragments.ShareChannelFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -119,6 +125,40 @@ public class MainActivity extends AppCompatActivity
 
         mModelManipulator = new ModelManipulator();
         mModelManipulator.initializeChannelModel(getApplicationContext());
+
+        handleFirebaseDynamicLink();
+
+    }
+
+    private void handleFirebaseDynamicLink() {
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, pendingDynamicLinkData -> {
+                    Log.d(LOG_TAG, "getDynamicLink:onSuccess");
+                    // Get deep link from result (may be null if no link is found)
+                    Uri deepLink = null;
+                    if (pendingDynamicLinkData != null) {
+                        deepLink = pendingDynamicLinkData.getLink();
+                        String channelName = deepLink.getQueryParameter("channelName");
+                        String channelId = deepLink.getQueryParameter("channelId");
+
+                        Log.d(LOG_TAG, "deepLink : " + deepLink.toString());
+                        Log.d(LOG_TAG, "add channel : " + channelName + ", " + channelId);
+                        mModelManipulator.addChannel(channelName, channelId);
+                        mModelManipulator.changeChannel(channelName);
+                    }
+                })
+                .addOnFailureListener(this, e ->
+                        Log.w(LOG_TAG, "getDynamicLink:onFailure", e));
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Since android:launchmode="singleTask" is specified, somecases onCreate will not called.
+        // Instead, onNewIntent is called.
+        // You should investigate each attribute and lifecyle behavior correctly.
+        handleFirebaseDynamicLink();
     }
 
     @Override
@@ -222,9 +262,12 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.create_channel:
                 CreateChannelFragment fragment = new CreateChannelFragment();
-                fragment.show(getFragmentManager(), "fragment");
+                fragment.show(getFragmentManager(), "createchannel");
                 break;
             case R.id.nav_share:
+                ArrayList<String> channelList = new ArrayList<>(mModelManipulator.getChannelList());
+                ShareChannelFragment shareChannelFragment = ShareChannelFragment.newInstance(channelList);
+                shareChannelFragment.show(getFragmentManager(), "sharechannel");
                 break;
             case ID_CHANNEL_ITEM:
                 mModelManipulator.changeChannel(item.getTitle().toString());
@@ -246,11 +289,14 @@ public class MainActivity extends AppCompatActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onMultipleChannelAdded(MultipleChannelAddedEvent event) {
+        Log.d(LOG_TAG, "onMultipleChannelAdded");
         event.getChannelSet().forEach(channel -> onChannelAdded(new ChannelAddedEvent(channel)));
+        EventBus.getDefault().removeStickyEvent(MultipleChannelAddedEvent.class);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChannelAdded(ChannelAddedEvent event) {
+        Log.d(LOG_TAG, "onChannelAdded : " + event.getChannelName());
         NavigationView navigationView = findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         MenuItem item = getChannelMenuItem(menu);
