@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by s-yamada on 2017/11/20.
@@ -32,7 +33,6 @@ public class ChannelModel {
 
     private ChannelModel(Context context) {
         mUserDataStorage = new LocalUserDataStorage(context);
-        readLocalChannelMapAsync();
     }
 
     private void readLocalChannelMapAsync() {
@@ -58,6 +58,7 @@ public class ChannelModel {
         if (instance == null) {
             instance = new ChannelModel(context);
         }
+        instance.readLocalChannelMapAsync();
         return instance;
     }
 
@@ -68,18 +69,26 @@ public class ChannelModel {
         return instance;
     }
 
-    void createChannel(@NonNull String channelName) {
+    void createChannelIfNotExist(@NonNull String channelName) {
+        if (mChannelMap.containsKey(channelName)) {
+            return;
+        }
         try {
-            mCountDownLatch.await();
+            if (mCountDownLatch.await(3, TimeUnit.SECONDS) == false) {
+                Log.w(LOG_TAG, "Create channel before reading local channel map since its timeout!!!");
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         String newChannelId =
                 SharableItemListModel.getInstanceIfCreated().createAndGetUniqueChannel();
-        addChannel(channelName, newChannelId);
+        addChannelIfNotExist(channelName, newChannelId);
     }
 
-    void addChannel(@NonNull String channelName, String newChannelId) {
+    void addChannelIfNotExist(@NonNull String channelName, String newChannelId) {
+        if (mChannelMap.containsKey(channelName)) {
+            return;
+        }
         mChannelMap.put(channelName, newChannelId);
         EventBus.getDefault().post(new ChannelAddedEvent(channelName));
         writeLocalChannelMapAsync(mChannelMap);
@@ -87,7 +96,9 @@ public class ChannelModel {
 
     void changeChannel(@NonNull String channelName) {
         try {
-            mCountDownLatch.await();
+            if (mCountDownLatch.await(3, TimeUnit.SECONDS) == false) {
+                Log.w(LOG_TAG, "Change channel before reading local channel map since its timeout!!!");
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

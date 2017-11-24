@@ -71,7 +71,7 @@ public class ModelManipulator {
     }
 
     public void addChannel(String channelName, String channelId) {
-        mChannelModel.addChannel(channelName, channelId);
+        mChannelModel.addChannelIfNotExist(channelName, channelId);
     }
 
     public List<String> getChannelList() {

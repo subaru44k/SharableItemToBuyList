@@ -275,11 +275,14 @@ public class MainActivity extends AppCompatActivity
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onMultipleChannelAdded(MultipleChannelAddedEvent event) {
+        Log.d(LOG_TAG, "onMultipleChannelAdded");
         event.getChannelSet().forEach(channel -> onChannelAdded(new ChannelAddedEvent(channel)));
+        EventBus.getDefault().removeStickyEvent(MultipleChannelAddedEvent.class);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onChannelAdded(ChannelAddedEvent event) {
+        Log.d(LOG_TAG, "onChannelAdded : " + event.getChannelName());
         NavigationView navigationView = findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         MenuItem item = getChannelMenuItem(menu);
