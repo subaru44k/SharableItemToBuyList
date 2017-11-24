@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity
                         Log.d(LOG_TAG, "deepLink : " + deepLink.toString());
                         Log.d(LOG_TAG, "add channel : " + channelName + ", " + channelId);
                         mModelManipulator.addChannel(channelName, channelId);
+                        mModelManipulator.changeChannel(channelName);
                     }
                 })
                 .addOnFailureListener(this, e ->
