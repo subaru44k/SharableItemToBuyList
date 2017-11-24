@@ -31,16 +31,15 @@ import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.CreateChannelFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.appsubaruod.sharabletobuylist.views.fragments.ShareChannelFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
-import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -142,12 +141,8 @@ public class MainActivity extends AppCompatActivity
                         mModelManipulator.addChannel(channelName, channelId);
                     }
                 })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(LOG_TAG, "getDynamicLink:onFailure", e);
-                    }
-                });
+                .addOnFailureListener(this, e ->
+                        Log.w(LOG_TAG, "getDynamicLink:onFailure", e));
 
     }
 
@@ -252,24 +247,12 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.create_channel:
                 CreateChannelFragment fragment = new CreateChannelFragment();
-                fragment.show(getFragmentManager(), "fragment");
+                fragment.show(getFragmentManager(), "createchannel");
                 break;
             case R.id.nav_share:
-                String baseUrl = "https://example.com/";
-                Uri linkUri = Uri.parse(baseUrl).buildUpon()
-                        .appendQueryParameter("channelName", "hoge")
-                        .appendQueryParameter("channelId", "-KzdQT4aBYKv87Myc0tV")
-                        .build();
-                DynamicLink dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                        .setLink(linkUri)
-                        .setDynamicLinkDomain("d9tb3.app.goo.gl")
-                        // Open links with this app on Android
-                        .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
-                        // Open links with com.example.ios on iOS
-                        .setIosParameters(new DynamicLink.IosParameters.Builder("com.example.ios").build())
-                        .buildDynamicLink();
-
-                Log.d(LOG_TAG, dynamicLink.getUri().toString());
+                ArrayList<String> channelList = new ArrayList<>(mModelManipulator.getChannelList());
+                ShareChannelFragment shareChannelFragment = ShareChannelFragment.newInstance(channelList);
+                shareChannelFragment.show(getFragmentManager(), "sharechannel");
                 break;
             case ID_CHANNEL_ITEM:
                 mModelManipulator.changeChannel(item.getTitle().toString());

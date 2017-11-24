@@ -12,7 +12,9 @@ import com.appsubaruod.sharabletobuylist.util.messages.MultipleChannelAddedEvent
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
@@ -99,5 +101,17 @@ public class ChannelModel {
 
     void changeToDefaultChannel() {
         SharableItemListModel.getInstanceIfCreated().changeToDefaultPath();
+    }
+
+    List<String> getChannelList() {
+        return new ArrayList<>(mChannelMap.keySet());
+    }
+
+    public String getFirebaseId(@NonNull String channelName) {
+        if (mChannelMap != null) {
+            return mChannelMap.get(channelName);
+        } else {
+            return "";
+        }
     }
 }
