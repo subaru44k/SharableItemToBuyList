@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.views.activities;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -125,6 +126,11 @@ public class MainActivity extends AppCompatActivity
         mModelManipulator = new ModelManipulator();
         mModelManipulator.initializeChannelModel(getApplicationContext());
 
+        handleFirebaseDynamicLink();
+
+    }
+
+    private void handleFirebaseDynamicLink() {
         FirebaseDynamicLinks.getInstance()
                 .getDynamicLink(getIntent())
                 .addOnSuccessListener(this, pendingDynamicLinkData -> {
@@ -144,7 +150,15 @@ public class MainActivity extends AppCompatActivity
                 })
                 .addOnFailureListener(this, e ->
                         Log.w(LOG_TAG, "getDynamicLink:onFailure", e));
+    }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Since android:launchmode="singleTask" is specified, somecases onCreate will not called.
+        // Instead, onNewIntent is called.
+        // You should investigate each attribute and lifecyle behavior correctly.
+        handleFirebaseDynamicLink();
     }
 
     @Override

@@ -4,7 +4,6 @@ import android.content.Context;
 
 import com.appsubaruod.sharabletobuylist.storage.StorageInterpretator;
 import com.appsubaruod.sharabletobuylist.storage.interpretator.FirebaseInterpretator;
-import com.appsubaruod.sharabletobuylist.storage.interpretator.RealmInterpretator;
 
 import dagger.Module;
 import dagger.Provides;

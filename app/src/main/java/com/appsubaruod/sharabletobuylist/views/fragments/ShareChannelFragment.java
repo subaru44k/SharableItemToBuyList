@@ -4,22 +4,11 @@ package com.appsubaruod.sharabletobuylist.views.fragments;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.AsyncTaskLoader;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 
-import com.appsubaruod.sharabletobuylist.R;
-import com.appsubaruod.sharabletobuylist.models.ShareChannelModel;
 import com.appsubaruod.sharabletobuylist.viewmodels.ShareChannelFakeViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ShareChannelFragment extends DialogFragment {
     private ShareChannelFakeViewModel mShareChannelFakeViewModel;
@@ -47,7 +36,7 @@ public class ShareChannelFragment extends DialogFragment {
         String[] finalItemArray = itemArray;
         builder.setTitle("Share channel")
                 .setItems(itemArray, (dialogInterface, i) -> {
-                    mShareChannelFakeViewModel.onClick(finalItemArray[i]);
+                    mShareChannelFakeViewModel.onClick(getActivity(), finalItemArray[i]);
                 });
         return builder.create();
     }

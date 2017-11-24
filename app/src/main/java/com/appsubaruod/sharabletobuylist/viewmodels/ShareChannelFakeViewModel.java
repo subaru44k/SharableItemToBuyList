@@ -1,5 +1,7 @@
 package com.appsubaruod.sharabletobuylist.viewmodels;
 
+import android.app.Activity;
+
 import com.appsubaruod.sharabletobuylist.models.ShareChannelModel;
 
 /**
@@ -13,7 +15,7 @@ public class ShareChannelFakeViewModel {
         mShareChannelModel = new ShareChannelModel();
     }
 
-    public void onClick(String channelName) {
-        mShareChannelModel.doShareChannel(channelName);
+    public void onClick(Activity activity, String channelName) {
+        mShareChannelModel.doShareChannel(activity, channelName);
     }
 }
