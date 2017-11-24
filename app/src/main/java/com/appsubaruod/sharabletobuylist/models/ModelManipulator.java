@@ -67,4 +67,8 @@ public class ModelManipulator {
     public void initializeChannelModel(Context applicationContext) {
         mChannelModel = ChannelModel.getInstance(applicationContext);
     }
+
+    public void addChannel(String channelName, String channelId) {
+        mChannelModel.addChannel(channelName, channelId);
+    }
 }

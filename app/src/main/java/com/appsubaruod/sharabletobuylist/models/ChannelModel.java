@@ -74,6 +74,10 @@ public class ChannelModel {
         }
         String newChannelId =
                 SharableItemListModel.getInstanceIfCreated().createAndGetUniqueChannel();
+        addChannel(channelName, newChannelId);
+    }
+
+    void addChannel(@NonNull String channelName, String newChannelId) {
         mChannelMap.put(channelName, newChannelId);
         EventBus.getDefault().post(new ChannelAddedEvent(channelName));
         writeLocalChannelMapAsync(mChannelMap);

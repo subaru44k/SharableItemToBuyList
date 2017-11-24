@@ -70,6 +70,7 @@ public class LocalUserDataStorage implements UserDataStorage {
 
     private Map addToChannelMap(@NonNull Map<String, String> channelMap, String line) {
         String[] splittedLine = line.split(",");
+        Log.d(LOG_TAG, line);
         channelMap.put(splittedLine[0], splittedLine[1]);
         return channelMap;
     }

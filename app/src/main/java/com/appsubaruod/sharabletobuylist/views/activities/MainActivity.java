@@ -1,5 +1,6 @@
 package com.appsubaruod.sharabletobuylist.views.activities;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -30,7 +31,12 @@ import com.appsubaruod.sharabletobuylist.util.messages.StartActionModeEvent;
 import com.appsubaruod.sharabletobuylist.views.fragments.CreateChannelFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment;
 import com.appsubaruod.sharabletobuylist.views.fragments.ItemListDialogFragment;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -119,6 +125,30 @@ public class MainActivity extends AppCompatActivity
 
         mModelManipulator = new ModelManipulator();
         mModelManipulator.initializeChannelModel(getApplicationContext());
+
+        FirebaseDynamicLinks.getInstance()
+                .getDynamicLink(getIntent())
+                .addOnSuccessListener(this, pendingDynamicLinkData -> {
+                    Log.d(LOG_TAG, "getDynamicLink:onSuccess");
+                    // Get deep link from result (may be null if no link is found)
+                    Uri deepLink = null;
+                    if (pendingDynamicLinkData != null) {
+                        deepLink = pendingDynamicLinkData.getLink();
+                        String channelName = deepLink.getQueryParameter("channelName");
+                        String channelId = deepLink.getQueryParameter("channelId");
+
+                        Log.d(LOG_TAG, "deepLink : " + deepLink.toString());
+                        Log.d(LOG_TAG, "add channel : " + channelName + ", " + channelId);
+                        mModelManipulator.addChannel(channelName, channelId);
+                    }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(LOG_TAG, "getDynamicLink:onFailure", e);
+                    }
+                });
+
     }
 
     @Override
@@ -225,6 +255,21 @@ public class MainActivity extends AppCompatActivity
                 fragment.show(getFragmentManager(), "fragment");
                 break;
             case R.id.nav_share:
+                String baseUrl = "https://example.com/";
+                Uri linkUri = Uri.parse(baseUrl).buildUpon()
+                        .appendQueryParameter("channelName", "hoge")
+                        .appendQueryParameter("channelId", "-KzdQT4aBYKv87Myc0tV")
+                        .build();
+                DynamicLink dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                        .setLink(linkUri)
+                        .setDynamicLinkDomain("d9tb3.app.goo.gl")
+                        // Open links with this app on Android
+                        .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                        // Open links with com.example.ios on iOS
+                        .setIosParameters(new DynamicLink.IosParameters.Builder("com.example.ios").build())
+                        .buildDynamicLink();
+
+                Log.d(LOG_TAG, dynamicLink.getUri().toString());
                 break;
             case ID_CHANNEL_ITEM:
                 mModelManipulator.changeChannel(item.getTitle().toString());
