@@ -7,8 +7,10 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.R;
+import com.appsubaruod.sharabletobuylist.state.ApplicationStateMediator;
 import com.appsubaruod.sharabletobuylist.views.activities.MainActivity;
 
 import java.util.ArrayList;
@@ -30,16 +32,24 @@ import java.util.concurrent.TimeUnit;
  * In this case notification of "ItemA is added" should be deleted.
  */
 public class NotificationTaskCoordinator {
+    private static final String LOG_TAG = NotificationTaskCoordinator.class.getName();
     private Context mContext;
     private NotificationManager mNotificationManager;
     private int mNotificationId = 1;
     private Map<String, List<OperationType>> mNotifyOperation = new HashMap<>();
     private ScheduledFuture mFuture;
+    private ApplicationStateMediator.ApplicationState mState;
+    private ApplicationStateMediator.ApplicationStateChangedListener mApplicationStateChangedListener =
+            state -> {
+                Log.d(LOG_TAG, "application state changed : " + state.name());
+                mState = state;
+            };
 
-    public NotificationTaskCoordinator(Context context) {
+    public NotificationTaskCoordinator(Context context, ApplicationStateMediator mediator) {
         mContext = context;
         mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        mediator.setOnApplicationStateChangedListener(mApplicationStateChangedListener);
     }
 
     public void cancelNotification() {
@@ -139,22 +149,34 @@ public class NotificationTaskCoordinator {
     }
 
     public void requestAddedNotification(String itemName) {
+        if (ApplicationStateMediator.ApplicationState.RESUMED.equals(mState)) {
+            return;
+        }
         putNotificationDetail(OperationType.ITEM_ADDED, itemName);
         createNotificationAsync();
     }
 
     public void requestModifiedNotification(String oldItemName, String newItemName) {
+        if (ApplicationStateMediator.ApplicationState.RESUMED.equals(mState)) {
+            return;
+        }
         putNotificationDetail(OperationType.ITEM_DELETED, oldItemName);
         putNotificationDetail(OperationType.ITEM_ADDED, newItemName);
         createNotificationAsync();
     }
 
     public void requestDeletedNotification(String itemName) {
+        if (ApplicationStateMediator.ApplicationState.RESUMED.equals(mState)) {
+            return;
+        }
         putNotificationDetail(OperationType.ITEM_DELETED, itemName);
         createNotificationAsync();
     }
 
     public void requestCompletedNotification(String itemName) {
+        if (ApplicationStateMediator.ApplicationState.RESUMED.equals(mState)) {
+            return;
+        }
         putNotificationDetail(OperationType.ITEM_COMPLETED, itemName);
         createNotificationAsync();
     }

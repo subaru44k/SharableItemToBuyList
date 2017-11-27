@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.appsubaruod.sharabletobuylist.state.ActionModeState;
+import com.appsubaruod.sharabletobuylist.state.ApplicationStateMediator;
 import com.appsubaruod.sharabletobuylist.storage.eventoperator.StorageEventOperator;
 import com.appsubaruod.sharabletobuylist.util.Constant;
 import com.appsubaruod.sharabletobuylist.util.FirebaseEventReporter;
@@ -37,13 +38,16 @@ public class SharableItemListModel {
     private Set<BackgroundColorChangedListener> mBackgroundColorChangedListeners = new HashSet<>();
     private ActionModeState mActionModeState;
     private NotificationTaskCoordinator mNotificationTaskCoordinator;
+    private ApplicationStateMediator mApplicationStateMediator;
 
     private SharableItemListModel(Context context) {
         mContext = context;
         mStorageEventOperator = new StorageEventOperator(mContext);
         obtainItemsAsync();
         mActionModeState = new ActionModeState();
-        mNotificationTaskCoordinator = new NotificationTaskCoordinator(mContext);
+        mApplicationStateMediator = new ApplicationStateMediator();
+        mNotificationTaskCoordinator =
+                new NotificationTaskCoordinator(mContext, mApplicationStateMediator);
 
         EventBus.getDefault().register(this);
     }
@@ -219,6 +223,10 @@ public class SharableItemListModel {
     void changeToDefaultPath() {
         mStorageEventOperator.changeRootPath(Constant.DEFAULT_PATH);
         obtainItemsAsync();
+    }
+
+    public void changeApplicationState(ApplicationStateMediator.ApplicationState state) {
+        mApplicationStateMediator.setState(state);
     }
 
     interface BackgroundColorChangedListener {

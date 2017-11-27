@@ -3,6 +3,8 @@ package com.appsubaruod.sharabletobuylist.util;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.appsubaruod.sharabletobuylist.state.ApplicationStateMediator;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -18,12 +20,15 @@ import static org.junit.Assert.*;
  */
 @RunWith(AndroidJUnit4.class)
 public class NotificationTaskCoordinatorTest {
+    private ApplicationStateMediator mApplicationStateMediator;
     static NotificationTaskCoordinator mNotificationTaskCoordinator;
 
     @Before
     public void setUp() throws Exception {
+        mApplicationStateMediator = new ApplicationStateMediator();
         mNotificationTaskCoordinator =
-                new NotificationTaskCoordinator(InstrumentationRegistry.getTargetContext());
+                new NotificationTaskCoordinator(
+                        InstrumentationRegistry.getTargetContext(), mApplicationStateMediator);
     }
 
     @After
