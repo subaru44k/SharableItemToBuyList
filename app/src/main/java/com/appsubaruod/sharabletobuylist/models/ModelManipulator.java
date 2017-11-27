@@ -48,6 +48,10 @@ public class ModelManipulator {
         getSharableItemListModel().changeBackgroundColor(Color.WHITE);
     }
 
+    public void forceSetInputBoxExpansionState(int state) {
+        getInputBoxModel().forceSetInputBoxExpansionState(state);
+    }
+
     public int getInputBoxExpantionState() {
         return getInputBoxModel().getCurrentExpansionState();
     }

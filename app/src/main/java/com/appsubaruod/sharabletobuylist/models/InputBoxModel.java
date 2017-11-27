@@ -155,7 +155,7 @@ public class InputBoxModel {
         }
     }
 
-    public void forceSetInputBoxExpansionState(int state) {
+    void forceSetInputBoxExpansionState(int state) {
         switch (state) {
             case BottomSheetBehavior.STATE_EXPANDED:
                 mExpansionState = state;
