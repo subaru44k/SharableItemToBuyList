@@ -3,6 +3,8 @@ package com.appsubaruod.sharabletobuylist.models;
 import android.content.Context;
 import android.graphics.Color;
 
+import com.appsubaruod.sharabletobuylist.state.ApplicationStateMediator;
+
 import java.util.List;
 
 /**
@@ -71,10 +73,14 @@ public class ModelManipulator {
     }
 
     public void addChannel(String channelName, String channelId) {
-        mChannelModel.addChannelIfNotExist(channelName, channelId);
+        getChannelModel().addChannelIfNotExist(channelName, channelId);
     }
 
     public List<String> getChannelList() {
-        return mChannelModel.getChannelList();
+        return getChannelModel().getChannelList();
+    }
+
+    public void changeApplicationState(ApplicationStateMediator.ApplicationState state) {
+        getSharableItemListModel().changeApplicationState(state);
     }
 }
