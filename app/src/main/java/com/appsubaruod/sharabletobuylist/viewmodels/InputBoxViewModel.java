@@ -15,6 +15,7 @@ import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
 public class InputBoxViewModel extends BaseObservable implements InputBoxModel.OnInputBoxChangedListener {
 
     private String inputText;
+    private boolean mIsOpened;
 
     private InputBoxModel mModel;
 
@@ -32,6 +33,16 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
     public void setInputText(String inputText) {
         this.inputText = inputText;
         notifyPropertyChanged(BR.inputText);
+    }
+
+    @Bindable
+    public boolean getOpened() {
+        return mIsOpened;
+    }
+
+    public void setOpened(boolean isOpened) {
+        mIsOpened = isOpened;
+        notifyPropertyChanged(BR.opened);
     }
 
     /**
@@ -54,5 +65,10 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
     @Override
     public void onTextChanged(String text) {
         setInputText(text);
+    }
+
+    @Override
+    public void onInputBoxExpanded(boolean isOpened) {
+        setOpened(isOpened);
     }
 }

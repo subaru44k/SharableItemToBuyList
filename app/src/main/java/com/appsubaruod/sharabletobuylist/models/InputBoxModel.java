@@ -63,9 +63,13 @@ public class InputBoxModel {
      *
      * @param text new text set to the box
      */
-    public void setTextBoxString(String text) {
+    void setTextBoxString(String text) {
         mTextBoxString = text;
-        mListenerSet.stream().forEach(listener -> listener.onTextChanged(mTextBoxString));
+        mListenerSet.forEach(listener -> listener.onTextChanged(mTextBoxString));
+    }
+
+    private void notifyInputBoxExpanded(boolean isExpanded) {
+        mListenerSet.forEach(listener -> listener.onInputBoxExpanded(isExpanded));
     }
 
     /**
@@ -126,6 +130,7 @@ public class InputBoxModel {
             case BottomSheetBehavior.STATE_COLLAPSED:
                 mExpansionState = BottomSheetBehavior.STATE_EXPANDED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
+                notifyInputBoxExpanded(false);
                 break;
             default:
                 Log.d(LOG_TAG, "ignore event since input box is not collapsed state");
@@ -140,26 +145,30 @@ public class InputBoxModel {
                 mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
                 EventBus.getDefault().post(new CloseFloatingActionMenuEvent());
-                setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
+                notifyInputBoxExpanded(false);
                 break;
             default:
                 mExpansionState = BottomSheetBehavior.STATE_EXPANDED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
+                notifyInputBoxExpanded(true);
                 break;
         }
     }
 
     public void forceSetInputBoxExpansionState(int state) {
         switch (state) {
-            case BottomSheetBehavior.STATE_COLLAPSED:
-                setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
-                // fall through
             case BottomSheetBehavior.STATE_EXPANDED:
+                mExpansionState = state;
+                EventBus.getDefault().post(new ExpandInputBoxEvent(state));
+                notifyInputBoxExpanded(true);
+                break;
+            case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_DRAGGING:
             case BottomSheetBehavior.STATE_SETTLING:
             case BottomSheetBehavior.STATE_HIDDEN:
                 mExpansionState = state;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(state));
+                notifyInputBoxExpanded(false);
                 break;
             default:
                 Log.w(LOG_TAG, "forceSetInputBoxExpansionState(state) is called " +
@@ -174,5 +183,6 @@ public class InputBoxModel {
 
     public interface OnInputBoxChangedListener {
         void onTextChanged(String text);
+        void onInputBoxExpanded(boolean isOpened);
     }
 }
