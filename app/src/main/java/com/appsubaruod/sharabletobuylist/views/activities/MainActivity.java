@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import com.appsubaruod.sharabletobuylist.R;
 import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
 import com.appsubaruod.sharabletobuylist.models.ModelManipulator;
+import com.appsubaruod.sharabletobuylist.state.ApplicationStateMediator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
 import com.appsubaruod.sharabletobuylist.util.messages.ChannelAddedEvent;
 import com.appsubaruod.sharabletobuylist.util.messages.ExpandInputBoxEvent;
@@ -127,7 +128,6 @@ public class MainActivity extends AppCompatActivity
         mModelManipulator.initializeChannelModel(getApplicationContext());
 
         handleFirebaseDynamicLink();
-
     }
 
     private void handleFirebaseDynamicLink() {
@@ -165,6 +165,13 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         mModelManipulator.cancelNotification();
+        mModelManipulator.changeApplicationState(ApplicationStateMediator.ApplicationState.RESUMED);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mModelManipulator.changeApplicationState(ApplicationStateMediator.ApplicationState.PAUSED);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -208,12 +215,14 @@ public class MainActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        mModelManipulator.changeApplicationState(ApplicationStateMediator.ApplicationState.STARTED);
     }
 
     @Override
     public void onStop() {
         EventBus.getDefault().unregister(this);
         super.onStop();
+        mModelManipulator.changeApplicationState(ApplicationStateMediator.ApplicationState.STOPPED);
     }
 
     @Override
