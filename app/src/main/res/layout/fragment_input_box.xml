@@ -48,6 +48,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
             android:src="?android:attr/actionModeFindDrawable"
+            android:visibility="invisible"
             app:layout_constraintEnd_toStartOf="@+id/mainLayout"
             app:layout_constraintStart_toEndOf="@+id/textView"
             app:layout_constraintTop_toTopOf="parent" />
