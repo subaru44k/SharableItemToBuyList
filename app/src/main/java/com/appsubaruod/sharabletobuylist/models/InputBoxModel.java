@@ -130,7 +130,7 @@ public class InputBoxModel {
             case BottomSheetBehavior.STATE_COLLAPSED:
                 mExpansionState = BottomSheetBehavior.STATE_EXPANDED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
-                notifyInputBoxExpanded(false);
+                notifyInputBoxExpanded(true);
                 break;
             default:
                 Log.d(LOG_TAG, "ignore event since input box is not collapsed state");
