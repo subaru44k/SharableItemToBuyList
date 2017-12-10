@@ -32,7 +32,6 @@ public class InputBoxModel {
 
     private InputBoxModel(Context context) {
         mContext = context;
-        mTextBoxString = mContext.getResources().getString(R.string.sample_input_text);
         mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
     }
 
@@ -72,6 +71,10 @@ public class InputBoxModel {
         mListenerSet.forEach(listener -> listener.onInputBoxExpanded(isExpanded));
     }
 
+    private void notifyInputBoxExpanded(boolean isExpanded, boolean fromItem) {
+        mListenerSet.forEach(listener -> listener.onInputBoxExpanded(isExpanded, fromItem));
+    }
+
     /**
      * Add item and reflect to db.
      *
@@ -109,7 +112,7 @@ public class InputBoxModel {
         if (isInputBoxCollapsed()) {
             setTextBoxString("");
         }
-        expandInputBox();
+        expandInputBox(false);
     }
 
     private boolean isInputBoxExpanded() {
@@ -123,21 +126,21 @@ public class InputBoxModel {
     /**
      * Controls InputBox and editable state of input box.
      */
-    public void expandInputBox() {
+    void expandInputBox(boolean fromItem) {
         Log.d(LOG_TAG, "expandInputBox : " + mExpansionState);
 
         switch (mExpansionState) {
             case BottomSheetBehavior.STATE_COLLAPSED:
                 mExpansionState = BottomSheetBehavior.STATE_EXPANDED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
-                notifyInputBoxExpanded(true);
+                notifyInputBoxExpanded(true, fromItem);
                 break;
             default:
                 Log.d(LOG_TAG, "ignore event since input box is not collapsed state");
         }
     }
 
-    public void toggleInputBox() {
+    void toggleInputBox() {
         Log.d(LOG_TAG, "toggleInputBox : " + mExpansionState);
 
         switch (mExpansionState) {
@@ -184,5 +187,6 @@ public class InputBoxModel {
     public interface OnInputBoxChangedListener {
         void onTextChanged(String text);
         void onInputBoxExpanded(boolean isOpened);
+        void onInputBoxExpanded(boolean isOpened, boolean fromItem);
     }
 }

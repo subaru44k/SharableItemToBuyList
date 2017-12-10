@@ -16,6 +16,7 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
 
     private String inputText;
     private boolean mIsOpened;
+    private boolean mOpenedFromItem;
 
     private InputBoxModel mModel;
 
@@ -40,9 +41,19 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
         return mIsOpened;
     }
 
-    public void setOpened(boolean isOpened) {
+    private void setOpened(boolean isOpened) {
         mIsOpened = isOpened;
         notifyPropertyChanged(BR.opened);
+    }
+
+    @Bindable
+    public boolean getOpenedFromItem() {
+        return mOpenedFromItem;
+    }
+
+    private void setOpenedFromItem(boolean openedFromItem) {
+        mOpenedFromItem = openedFromItem;
+        notifyPropertyChanged(BR.openedFromItem);
     }
 
     /**
@@ -70,5 +81,11 @@ public class InputBoxViewModel extends BaseObservable implements InputBoxModel.O
     @Override
     public void onInputBoxExpanded(boolean isOpened) {
         setOpened(isOpened);
+    }
+
+    @Override
+    public void onInputBoxExpanded(boolean isOpened, boolean fromItem) {
+        onInputBoxExpanded(isOpened);
+        setOpenedFromItem(fromItem);
     }
 }

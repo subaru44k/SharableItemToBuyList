@@ -83,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_action_create"
                 android:onClick="@{inputItem::onClickModifyItemButton}"
+                android:visibility="@{inputItem.openedFromItem ? View.VISIBLE : View.GONE}"
                 fab:fab_label="modify"/>
 
             <com.github.clans.fab.FloatingActionButton
