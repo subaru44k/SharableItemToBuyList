@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.appsubaruod.sharabletobuylist.R;
-import com.appsubaruod.sharabletobuylist.models.InputBoxModel;
 import com.appsubaruod.sharabletobuylist.models.ModelManipulator;
 import com.appsubaruod.sharabletobuylist.state.ApplicationStateMediator;
 import com.appsubaruod.sharabletobuylist.util.FirebaseAnalyticsOperator;
@@ -86,14 +85,12 @@ public class MainActivity extends AppCompatActivity
                     case BottomSheetBehavior.STATE_EXPANDED:
                         Log.d(LOG_TAG, "state expanded");
                         // Change InputBox state
-                        InputBoxModel.getInstanceIfCreated()
-                                .forceSetInputBoxExpansionState(newState);
+                        mModelManipulator.forceSetInputBoxExpansionState(newState);
                         break;
                     case BottomSheetBehavior.STATE_COLLAPSED:
                         Log.d(LOG_TAG, "state collapsed");
                         // Change InputBox state
-                        InputBoxModel.getInstanceIfCreated()
-                                .forceSetInputBoxExpansionState(newState);
+                        mModelManipulator.forceSetInputBoxExpansionState(newState);
                         break;
                     case BottomSheetBehavior.STATE_HIDDEN:
                         Log.d(LOG_TAG, "state hidden");

@@ -5,6 +5,7 @@
     xmlns:fab="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="inputItem"
             type="com.appsubaruod.sharabletobuylist.viewmodels.InputBoxViewModel"/>
@@ -20,25 +21,40 @@
         tools:layout_gravity="bottom"
         tools:context="com.appsubaruod.sharabletobuylist.views.fragments.InputBoxFragment">
 
-        <EditText
+        <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="0dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="0dp"
-            android:gravity="top"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
             android:onClick="@{inputItem::onClick}"
+            android:text="@string/sample_input_text"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:visibility="@{inputItem.opened ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:gravity="top"
             android:text="@={inputItem.inputText}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:visibility="@{inputItem.opened ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView"
+            app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteY="8dp"
-            tools:text="@string/sample_input_text" />
+            tools:text="@string/sample_input_text"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/imageView"
@@ -67,6 +83,7 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_action_create"
                 android:onClick="@{inputItem::onClickModifyItemButton}"
+                android:visibility="@{inputItem.openedFromItem ? View.VISIBLE : View.GONE}"
                 fab:fab_label="modify"/>
 
             <com.github.clans.fab.FloatingActionButton

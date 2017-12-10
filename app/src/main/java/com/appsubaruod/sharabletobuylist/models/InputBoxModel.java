@@ -32,7 +32,6 @@ public class InputBoxModel {
 
     private InputBoxModel(Context context) {
         mContext = context;
-        mTextBoxString = mContext.getResources().getString(R.string.sample_input_text);
         mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
     }
 
@@ -63,9 +62,17 @@ public class InputBoxModel {
      *
      * @param text new text set to the box
      */
-    public void setTextBoxString(String text) {
+    void setTextBoxString(String text) {
         mTextBoxString = text;
-        mListenerSet.stream().forEach(listener -> listener.onTextChanged(mTextBoxString));
+        mListenerSet.forEach(listener -> listener.onTextChanged(mTextBoxString));
+    }
+
+    private void notifyInputBoxExpanded(boolean isExpanded) {
+        mListenerSet.forEach(listener -> listener.onInputBoxExpanded(isExpanded));
+    }
+
+    private void notifyInputBoxExpanded(boolean isExpanded, boolean fromItem) {
+        mListenerSet.forEach(listener -> listener.onInputBoxExpanded(isExpanded, fromItem));
     }
 
     /**
@@ -105,7 +112,7 @@ public class InputBoxModel {
         if (isInputBoxCollapsed()) {
             setTextBoxString("");
         }
-        expandInputBox();
+        expandInputBox(false);
     }
 
     private boolean isInputBoxExpanded() {
@@ -119,20 +126,21 @@ public class InputBoxModel {
     /**
      * Controls InputBox and editable state of input box.
      */
-    public void expandInputBox() {
+    void expandInputBox(boolean fromItem) {
         Log.d(LOG_TAG, "expandInputBox : " + mExpansionState);
 
         switch (mExpansionState) {
             case BottomSheetBehavior.STATE_COLLAPSED:
                 mExpansionState = BottomSheetBehavior.STATE_EXPANDED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
+                notifyInputBoxExpanded(true, fromItem);
                 break;
             default:
                 Log.d(LOG_TAG, "ignore event since input box is not collapsed state");
         }
     }
 
-    public void toggleInputBox() {
+    void toggleInputBox() {
         Log.d(LOG_TAG, "toggleInputBox : " + mExpansionState);
 
         switch (mExpansionState) {
@@ -140,26 +148,30 @@ public class InputBoxModel {
                 mExpansionState = BottomSheetBehavior.STATE_COLLAPSED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
                 EventBus.getDefault().post(new CloseFloatingActionMenuEvent());
-                setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
+                notifyInputBoxExpanded(false);
                 break;
             default:
                 mExpansionState = BottomSheetBehavior.STATE_EXPANDED;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(mExpansionState));
+                notifyInputBoxExpanded(true);
                 break;
         }
     }
 
-    public void forceSetInputBoxExpansionState(int state) {
+    void forceSetInputBoxExpansionState(int state) {
         switch (state) {
-            case BottomSheetBehavior.STATE_COLLAPSED:
-                setTextBoxString(mContext.getResources().getString(R.string.sample_input_text));
-                // fall through
             case BottomSheetBehavior.STATE_EXPANDED:
+                mExpansionState = state;
+                EventBus.getDefault().post(new ExpandInputBoxEvent(state));
+                notifyInputBoxExpanded(true);
+                break;
+            case BottomSheetBehavior.STATE_COLLAPSED:
             case BottomSheetBehavior.STATE_DRAGGING:
             case BottomSheetBehavior.STATE_SETTLING:
             case BottomSheetBehavior.STATE_HIDDEN:
                 mExpansionState = state;
                 EventBus.getDefault().post(new ExpandInputBoxEvent(state));
+                notifyInputBoxExpanded(false);
                 break;
             default:
                 Log.w(LOG_TAG, "forceSetInputBoxExpansionState(state) is called " +
@@ -174,5 +186,7 @@ public class InputBoxModel {
 
     public interface OnInputBoxChangedListener {
         void onTextChanged(String text);
+        void onInputBoxExpanded(boolean isOpened);
+        void onInputBoxExpanded(boolean isOpened, boolean fromItem);
     }
 }

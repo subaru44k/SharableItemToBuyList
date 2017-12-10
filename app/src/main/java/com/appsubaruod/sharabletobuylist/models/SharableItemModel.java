@@ -37,7 +37,7 @@ public class SharableItemModel
      */
     public void onItemClicked() {
         if (!mSharableItemListModel.isActionMode()) {
-            mInputBoxModel.expandInputBox();
+            mInputBoxModel.expandInputBox(true);
             mInputBoxModel.setTextBoxString(mSharableItemListModel.getText(mIndex));
             changeToDefaultColor();
             FirebaseEventReporter.getInstance().sendItemClickedEventLog(getText());
