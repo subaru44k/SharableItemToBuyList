@@ -70,11 +70,12 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.github.clans.fab.FloatingActionMenu
-            android:id="@+id/floatingActionMenu"
+            android:id="@+id/floatingActionMenuModifiable"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
+            android:visibility="@{inputItem.openedFromItem ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
@@ -83,8 +84,26 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_action_create"
                 android:onClick="@{inputItem::onClickModifyItemButton}"
-                android:visibility="@{inputItem.openedFromItem ? View.VISIBLE : View.GONE}"
                 fab:fab_label="@string/fab_label_modify"/>
+
+            <com.github.clans.fab.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_item"
+                android:onClick="@{inputItem::onClickAddItemButton}"
+                fab:fab_label="@string/fab_label_add"/>
+
+        </com.github.clans.fab.FloatingActionMenu>
+
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/floatingActionMenuNotModifiable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="@{inputItem.openedFromItem ? View.GONE : View.VISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <com.github.clans.fab.FloatingActionButton
                 android:layout_width="wrap_content"

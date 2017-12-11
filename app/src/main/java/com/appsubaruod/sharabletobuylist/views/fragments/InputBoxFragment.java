@@ -74,8 +74,12 @@ public class InputBoxFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void closeFloatingActionMenu(CloseFloatingActionMenuEvent event) {
-        FloatingActionMenu fam = (FloatingActionMenu) getActivity().findViewById(R.id.floatingActionMenu);
-        fam.close(true);
+        FloatingActionMenu famModifiable =
+                (FloatingActionMenu) getActivity().findViewById(R.id.floatingActionMenuModifiable);
+        FloatingActionMenu famNotModifiable =
+                (FloatingActionMenu) getActivity().findViewById(R.id.floatingActionMenuNotModifiable);
+        famModifiable.close(true);
+        famNotModifiable.close(true);
     }
 
 }
