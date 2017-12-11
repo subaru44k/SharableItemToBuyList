@@ -84,14 +84,14 @@
                 android:src="@drawable/ic_action_create"
                 android:onClick="@{inputItem::onClickModifyItemButton}"
                 android:visibility="@{inputItem.openedFromItem ? View.VISIBLE : View.GONE}"
-                fab:fab_label="modify"/>
+                fab:fab_label="@string/fab_label_modify"/>
 
             <com.github.clans.fab.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_add_item"
                 android:onClick="@{inputItem::onClickAddItemButton}"
-                fab:fab_label="add"/>
+                fab:fab_label="@string/fab_label_add"/>
 
         </com.github.clans.fab.FloatingActionMenu>
     </android.support.constraint.ConstraintLayout>

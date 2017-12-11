@@ -13,7 +13,7 @@
         </menu>
     </item>
 
-    <item android:title="Manage">
+    <item android:title="@string/manage">
         <menu>
             <item
                 android:id="@+id/create_channel"
@@ -22,7 +22,7 @@
         </menu>
     </item>
 
-    <item android:title="Communicate">
+    <item android:title="@string/communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"

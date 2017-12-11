@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">共有アイテムリスト</string>
+    <string name="navigation_drawer_channels">チャンネル</string>
+    <string name="action_settings">設定</string>
+    <string name="sample_input_text">タップしてアイテムの追加</string>
+    <string name="manage">管理</string>
+    <string name="communicate">共有</string>
+    <string name="fab_label_modify">変更</string>
+    <string name="fab_label_add">追加</string>
+</resources>
