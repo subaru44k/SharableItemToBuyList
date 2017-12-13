@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
+apply plugin: 'me.tatarka.retrolambda'
 
 android {
     flavorDimensions "executionEnv"
@@ -8,7 +9,7 @@ android {
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.appsubaruod.sharabletobuylist"
-        minSdkVersion 24
+        minSdkVersion 23
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -71,6 +72,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-invites:11.2.2'
 
     implementation 'com.github.clans:fab:1.6.4'
+
+    implementation 'com.annimon:stream:1.1.9'
 }
 
 apply plugin: 'com.google.gms.google-services'
